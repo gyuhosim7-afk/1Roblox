@@ -72,6 +72,15 @@ function PlayerService.RegisterStats(name: string, provider: (Session) -> any)
 	statsProviders[name] = provider
 end
 
+-- Moves the tutorial forward if the player is currently on `fromStep`.
+function PlayerService.AdvanceTutorial(player: Player, fromStep: number)
+	local session = PlayerService.Get(player)
+	if session and session.Data.TutorialStep == fromStep then
+		session.Data.TutorialStep = fromStep + 1
+		PlayerService.MarkDirty(player, true)
+	end
+end
+
 local HIDDEN_DATA_KEYS = { Purchases = true, PurchaseOrder = true, PassCache = true }
 
 function PlayerService.BuildState(session: Session): any

@@ -12,6 +12,7 @@ local Signal = require(Shared.Signal)
 local Formulas = require(Shared.Formulas)
 local MapService = require(script.Parent.MapService)
 local PlayerService = require(script.Parent.PlayerService)
+local BoostService = require(script.Parent.BoostService)
 
 export type Slot = { Index: number, Part: BasePart, Anchor: CFrame, Label: TextLabel? }
 export type PlotState = {
@@ -290,7 +291,7 @@ function PlotService.RefreshSlots(plot: PlotState)
 	if owner then
 		local session = PlayerService.Get(owner)
 		if session then
-			local hasPass = session.Runtime.Passes and session.Runtime.Passes.ExtraIncubators == true
+			local hasPass = BoostService.HasPass(owner, "ExtraIncubators")
 			incubatorCount = Formulas.IncubatorCount(session.Data.IncubatorLevel, hasPass)
 			pedestalCount = Formulas.PedestalCount(session.Data.PedestalLevel)
 		end
@@ -386,6 +387,12 @@ function PlotService.Start()
 	end)
 	PlayerService.PlayerLeaving:Connect(function(player: Player)
 		release(player)
+	end)
+	BoostService.PassesChanged:Connect(function(player: Player)
+		local plot = byPlayer[player]
+		if plot then
+			PlotService.RefreshSlots(plot)
+		end
 	end)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		release(player)

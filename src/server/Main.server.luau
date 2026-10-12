@@ -7,8 +7,13 @@ local ORDER = {
 	"DataService",
 	"Network",
 	"PlayerService",
+	"BoostService",
 	"MapService",
 	"PlotService",
+	"SpeedService",
+	"SlimeService",
+	"HatchService",
+	"EggService",
 }
 
 local loaded = {}
