@@ -1,0 +1,8 @@
+# Rojo / tooling
+sourcemap.json
+*.rbxlx.lock
+*.rbxl.lock
+roblox.yml
+globalTypes.d.luau
+.luau-lsp-cache/
+node_modules/
