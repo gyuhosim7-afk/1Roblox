@@ -61,6 +61,8 @@ function MockServices.install(world)
 	workspace.Gravity = 196.2
 	local camera = lib.new("Camera")
 	camera.Name = "Camera"
+	camera.CFrame = roblox.CFrame.new(0, 20, -150)
+	camera.ViewportSize = roblox.Vector2.new(1280, 720)
 	camera.Parent = workspace
 	workspace.CurrentCamera = camera
 
@@ -89,6 +91,11 @@ function MockServices.install(world)
 	do
 		service(className)
 	end
+	lib.classMethods.SoundService = {
+		PlayLocalSound = function(_, sound)
+			lib.recordCall(sound, "PlayLocalSound")
+		end,
+	}
 	local starterPlayer = services.StarterPlayer
 	local sps = lib.new("Folder")
 	sps.Name = "StarterPlayerScripts"
@@ -117,6 +124,9 @@ function MockServices.install(world)
 	scheduler.onStep = function(dt)
 		lib.getSignal(runService, "Stepped"):Fire(scheduler.now, dt)
 		lib.getSignal(runService, "Heartbeat"):Fire(dt)
+		if world.clientPlayer then
+			lib.getSignal(runService, "RenderStepped"):Fire(dt)
+		end
 	end
 
 	-- Players -----------------------------------------------------------------

@@ -43,6 +43,9 @@ function BoostService.SetPass(player: Player, key: string, owned: boolean)
 	if owned then
 		session.Data.PassCache[key] = true
 	end
+	if key == "VIP" then
+		player:SetAttribute("VIP", owned) -- everyone's client shows the VIP chat tag
+	end
 	PlayerService.MarkDirty(player, true)
 	BoostService.PassesChanged:Fire(player)
 end
@@ -143,6 +146,9 @@ function BoostService.Start()
 			if (Config.Passes :: any)[key] then
 				passes[key] = true
 			end
+		end
+		if passes.VIP then
+			player:SetAttribute("VIP", true)
 		end
 		PlayerService.MarkDirty(player, true)
 		BoostService.PassesChanged:Fire(player)

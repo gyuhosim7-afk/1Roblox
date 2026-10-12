@@ -388,6 +388,35 @@ function World:Run(fn: () -> ...any, maxSeconds: number?)
 	return table.unpack(results, 1, results.n)
 end
 
+-- Runs the client scripts for `player` in the same DataModel, bridging remotes:
+-- server FireClient(player) -> client OnClientEvent, client InvokeServer -> server OnServerInvoke.
+function World:StartClient(player: any)
+	local lib = self.InstanceLib
+	self.clientPlayer = player
+	self.services.Players.LocalPlayer = player
+	lib.onFireClient = function(remote, target, ...)
+		if target == self.clientPlayer then
+			lib.getSignal(remote, "OnClientEvent"):Fire(...)
+		end
+	end
+	lib.onFireAllClients = function(remote, ...)
+		lib.getSignal(remote, "OnClientEvent"):Fire(...)
+	end
+	lib.onInvokeServer = function(remote, ...)
+		local handler = remote.OnServerInvoke
+		if handler then
+			return handler(self.clientPlayer, ...)
+		end
+		return nil
+	end
+	local container = self:Find("StarterPlayer/StarterPlayerScripts")
+	for _, desc in container:GetDescendants() do
+		if desc.ClassName == "LocalScript" then
+			self:RunScript(desc)
+		end
+	end
+end
+
 function World:Advance(seconds: number, step: number?)
 	self.scheduler:Advance(seconds, step)
 	self.scheduler:ThrowIfErrors()

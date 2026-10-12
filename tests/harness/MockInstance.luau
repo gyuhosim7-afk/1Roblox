@@ -861,12 +861,25 @@ function MockInstance.newLibrary(scheduler: any)
 	-- Remotes -----------------------------------------------------------------
 	function Methods:FireClient(player, ...)
 		recordCall(self, "FireClient", player, ...)
+		if lib.onFireClient then
+			lib.onFireClient(self, player, ...)
+		end
 	end
 	function Methods:FireAllClients(...)
 		recordCall(self, "FireAllClients", ...)
+		if lib.onFireAllClients then
+			lib.onFireAllClients(self, ...)
+		end
 	end
 	function Methods:FireServer(...)
 		recordCall(self, "FireServer", ...)
+	end
+	function Methods:InvokeServer(...)
+		recordCall(self, "InvokeServer", ...)
+		if lib.onInvokeServer then
+			return lib.onInvokeServer(self, ...)
+		end
+		return nil
 	end
 	function Methods:InvokeClient(player, ...)
 		recordCall(self, "InvokeClient", player, ...)
