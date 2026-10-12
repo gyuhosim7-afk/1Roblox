@@ -242,7 +242,8 @@ function HatchService.HatchAllNow(player: Player): number
 	return count
 end
 
-local function skip(player: Player, payload: any): (boolean, string?)
+-- Pays gems to hatch the egg in `payload` (slot number) right now.
+function HatchService.Skip(player: Player, payload: any): (boolean, string?)
 	local session = PlayerService.Get(player)
 	local slot = Validate.Integer(payload, 1, 16)
 	if not session or not slot then
@@ -272,7 +273,7 @@ local function skip(player: Player, payload: any): (boolean, string?)
 end
 
 function HatchService.Init()
-	Network.Handle("SkipHatch", skip)
+	Network.Handle("SkipHatch", HatchService.Skip)
 	PlayerService.RegisterState("IncubatorCapacity", function(session)
 		return HatchService.Capacity(session.Player)
 	end)

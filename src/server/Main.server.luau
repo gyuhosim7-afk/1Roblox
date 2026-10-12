@@ -14,6 +14,9 @@ local ORDER = {
 	"SlimeService",
 	"HatchService",
 	"EggService",
+	"GuardService",
+	"UpgradeService",
+	"StealService",
 }
 
 local loaded = {}
