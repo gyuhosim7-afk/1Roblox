@@ -712,6 +712,7 @@ Config.Products = {
 		Name = "Luck Potion",
 		Description = "Luck x2 for 15 minutes (Rare+ slimes and mutations 2x more likely).",
 		RandomItemModifier = true,
+		FallbackGems = 100, -- restricted players get gems instead
 	},
 	SpeedPotion = { Id = 0, Price = 49, Name = "Speed Potion", Description = "Speed gain x2 for 15 minutes." },
 	RoyalEgg = {

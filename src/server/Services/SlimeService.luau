@@ -94,15 +94,21 @@ local function clearPlot(plot: PlotService.PlotState)
 end
 
 -- Adds a slime to the player's inventory. Handles first-discovery gem rewards.
--- Returns the new record, or nil if the inventory is full.
-function SlimeService.AddSlime(player: Player, kind: string, mutation: string, source: string?): ProfileSchema.SlimeRecord?
+-- Returns the new record, or nil if the inventory is full (force = paid items may exceed the cap).
+function SlimeService.AddSlime(
+	player: Player,
+	kind: string,
+	mutation: string,
+	source: string?,
+	force: boolean?
+): ProfileSchema.SlimeRecord?
 	local session = PlayerService.Get(player)
 	local def = Config.Slimes[kind]
 	if not session or not def then
 		return nil
 	end
 	local data = session.Data
-	if #data.Slimes >= Config.Base.MaxSlimes then
+	if #data.Slimes >= Config.Base.MaxSlimes and not force then
 		return nil
 	end
 	local record: ProfileSchema.SlimeRecord = {
