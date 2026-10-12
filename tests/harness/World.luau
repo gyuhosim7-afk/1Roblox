@@ -123,6 +123,7 @@ function World:_mountPath(path: string, parent: any, nameOverride: string?)
 			local kind = scriptKind(initFile)
 			container = lib.new(kind :: string)
 			rawget(container, "__data").sourcePath = path .. "/" .. initFile
+			rawget(container, "__data").source = fs.readFile(path .. "/" .. initFile)
 		else
 			container = lib.new("Folder")
 		end
@@ -145,6 +146,8 @@ function World:_mountPath(path: string, parent: any, nameOverride: string?)
 		local inst = lib.new(kind)
 		inst.Name = nameOverride or name
 		rawget(inst, "__data").sourcePath = path
+		-- Read now: Lune's fs is async and would yield inside game coroutines.
+		rawget(inst, "__data").source = fs.readFile(path)
 		inst.Parent = parent
 		return inst
 	end
@@ -314,7 +317,7 @@ function World:RequireInstance(target: any)
 		error("No source for module " .. target:GetFullName())
 	end
 	self.loading[target] = true
-	local source = fs.readFile(sourcePath)
+	local source = rawget(target, "__data").source
 	local chunk = luau.load(source, { debugName = sourcePath, environment = self:_env(target) })
 	local results = table.pack(pcall(chunk))
 	self.loading[target] = nil
@@ -347,7 +350,7 @@ end
 
 function World:RunScript(inst: any)
 	local sourcePath = rawget(inst, "__data").sourcePath
-	local source = fs.readFile(sourcePath)
+	local source = rawget(inst, "__data").source
 	local chunk = luau.load(source, { debugName = sourcePath, environment = self:_env(inst) })
 	self.task.spawn(chunk)
 	self.scheduler:RunDue()

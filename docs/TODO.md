@@ -18,10 +18,10 @@
 
 ## 2단계. 기본 뼈대
 - [x] Config.luau (모든 숫자: 지역, 알, 슬라임, 가격, 확률, 보상)
-- [ ] 공용 유틸: Format(숫자 표시), Odds(확률 계산), Signal, Remotes
-- [ ] DataService: 세션 잠금, 재시도, 자동 저장, BindToClose, 불러오기 실패 보호, 스키마 마이그레이션
-- [ ] PlayerState: 서버 → 클라이언트 상태 동기화, leaderstats
-- [ ] 요청 처리기 + 요청 횟수 제한 (RemoteFunction "Request")
+- [x] 공용 유틸: Format(숫자 표시), Odds(확률 계산), Signal, Remotes
+- [x] DataService: 세션 잠금, 재시도, 자동 저장, BindToClose, 불러오기 실패 보호, 스키마 마이그레이션
+- [x] PlayerState: 서버 → 클라이언트 상태 동기화, leaderstats
+- [x] 요청 처리기 + 요청 횟수 제한 (RemoteFunction "Request")
 
 ## 3단계. 맵
 - [ ] MapBuilder: 기지 8칸, 긴 길, 7개 지역(색·장식), 지역 문, 둥지
