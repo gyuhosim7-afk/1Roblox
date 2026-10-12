@@ -10,14 +10,14 @@
 - [x] 작업 목록 docs/TODO.md, 규칙 CLAUDE.md
 
 ## 1단계. 개발 환경
-- [ ] Rojo 프로젝트 구조 (`default.project.json`, `src/shared|server|client`)
-- [ ] 도구 설치: rojo, lune, selene, stylua, luau-lsp (scripts/setup.sh)
-- [ ] Lune 테스트 하네스: Roblox 모듈 로더 + 서비스 목(mock) (`tests/`)
-- [ ] `scripts/check.sh`: stylua 검사, selene, luau-lsp analyze, 테스트, rojo build
-- [ ] Studio 연결 안내 문서 (docs/STUDIO_SETUP.md: Rojo 플러그인, Studio MCP)
+- [x] Rojo 프로젝트 구조 (`default.project.json`, `src/shared|server|client`)
+- [x] 도구 설치: rojo, lune, selene, stylua, luau-lsp (scripts/setup.sh)
+- [x] Lune 테스트 하네스: Roblox 모듈 로더 + 서비스 목(mock) (`tests/`)
+- [x] `scripts/check.sh`: stylua 검사, selene, luau-lsp analyze, 테스트, rojo build
+- [x] Studio 연결 안내 문서 (docs/STUDIO_SETUP.md: Rojo 플러그인, Studio MCP)
 
 ## 2단계. 기본 뼈대
-- [ ] Config.luau (모든 숫자: 지역, 알, 슬라임, 가격, 확률, 보상)
+- [x] Config.luau (모든 숫자: 지역, 알, 슬라임, 가격, 확률, 보상)
 - [ ] 공용 유틸: Format(숫자 표시), Odds(확률 계산), Signal, Remotes
 - [ ] DataService: 세션 잠금, 재시도, 자동 저장, BindToClose, 불러오기 실패 보호, 스키마 마이그레이션
 - [ ] PlayerState: 서버 → 클라이언트 상태 동기화, leaderstats
@@ -81,3 +81,4 @@
 
 ## 진행 기록
 - 2026-10-12: 조사, 기획, 작업 목록 작성.
+- 2026-10-12: 개발 환경 완성 (Rojo 빌드, Lune 테스트 하네스, selene, luau-lsp 타입검사). Config/Format/Formulas/Odds 작성 + 테스트 26개 통과.
