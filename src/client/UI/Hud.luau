@@ -41,16 +41,25 @@ local function pill(parent: Instance, name: string, icon: string, color: Color3,
 end
 
 function Hud.Mount(screen: ScreenGui, actions: Actions)
-	-- Top stats bar
+	-- Top stack: stats bar, boost timers, banner and toasts share one UIScale so they never overlap.
+	local stack = Instance.new("Frame")
+	stack.Name = "TopStack"
+	stack.BackgroundTransparency = 1
+	stack.Size = UDim2.fromOffset(660, 420)
+	stack.Position = UDim2.new(0.5, 0, 0, 4)
+	stack.AnchorPoint = Vector2.new(0.5, 0)
+	stack.Parent = screen
+	Theme.List(stack, 6)
+	Theme.AutoScale(stack)
+	refs.TopStack = stack
+
 	local top = Instance.new("Frame")
 	top.Name = "TopBar"
 	top.BackgroundTransparency = 1
-	top.Size = UDim2.fromOffset(640, 60)
-	top.Position = UDim2.new(0.5, 0, 0, 4)
-	top.AnchorPoint = Vector2.new(0.5, 0)
-	top.Parent = screen
+	top.Size = UDim2.fromOffset(640, 56)
+	top.LayoutOrder = 1
+	top.Parent = stack
 	Theme.List(top, 10, true)
-	Theme.AutoScale(top)
 	local speedPill, speedValue = pill(top, "Speed", "⚡", Theme.Colors.Gold, 250, 1)
 	speedValue.Size = UDim2.new(1, -60, 0.62, -2)
 	local perSecond =
@@ -64,16 +73,15 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	refs.Coins = coinValue
 	refs.Gems = gemValue
 
-	-- Boost timers under the bar
 	local boosts = Instance.new("Frame")
 	boosts.Name = "Boosts"
 	boosts.BackgroundTransparency = 1
-	boosts.Size = UDim2.fromOffset(640, 30)
-	boosts.Position = UDim2.new(0.5, 0, 0, 62)
-	boosts.AnchorPoint = Vector2.new(0.5, 0)
-	boosts.Parent = screen
+	boosts.Size = UDim2.fromOffset(640, 28)
+	boosts.LayoutOrder = 2
+	boosts.Visible = false
+	boosts.Parent = stack
 	Theme.List(boosts, 8, true)
-	Theme.AutoScale(boosts)
+	refs.BoostsRow = boosts
 	local boostInfo: { { Key: string, Text: string } } = {
 		{ Key = "LuckPotion", Text = "🍀 Luck x2" },
 		{ Key = "SpeedPotion", Text = "⚡ Speed x2" },
@@ -95,15 +103,33 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 		refs[info.Key] = { Frame = frame, Label = label, Text = info.Text }
 	end
 
-	-- Left menu
+	local banner = Theme.Frame({
+		Name = "Banner",
+		Size = UDim2.fromOffset(600, 48),
+		Color = Theme.Colors.Accent,
+		Radius = 16,
+		LayoutOrder = 3,
+		Parent = stack,
+	})
+	banner.Visible = false
+	local bannerText = Theme.Text(banner, "", { MaxSize = 24 })
+	bannerText.Size = UDim2.new(1, -16, 1, -8)
+	bannerText.Position = UDim2.fromOffset(8, 4)
+	refs.Banner = banner
+	refs.BannerText = bannerText
+
+	-- Left menu: 2 columns so it stays above the mobile thumbstick area.
 	local left = Instance.new("Frame")
 	left.Name = "Menu"
 	left.BackgroundTransparency = 1
-	left.Size = UDim2.fromOffset(100, 470)
-	left.Position = UDim2.new(0, 8, 0.45, 0)
-	left.AnchorPoint = Vector2.new(0, 0.5)
+	left.Size = UDim2.fromOffset(180, 290)
+	left.Position = UDim2.fromOffset(8, 8)
 	left.Parent = screen
-	Theme.List(left, 8)
+	local grid = Instance.new("UIGridLayout")
+	grid.CellSize = UDim2.fromOffset(86, 66)
+	grid.CellPadding = UDim2.fromOffset(8, 8)
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	grid.Parent = left
 	Theme.AutoScale(left)
 	local menu: { { Key: string, Text: string, Color: Color3 } } = {
 		{ Key = "Shop", Text = "🛒\nSHOP", Color = Theme.Colors.Pink },
@@ -116,19 +142,17 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	for index, item in menu do
 		local button = Theme.Button(left, item.Text, item.Color, function()
 			actions.OpenWindow(item.Key)
-		end, { Name = item.Key, Size = UDim2.fromOffset(86, 72), LayoutOrder = index, MaxText = 20 })
+		end, { Name = item.Key, LayoutOrder = index, MaxText = 20 })
 		refs.MenuButtons[item.Key] = button
 	end
 	local gift = Theme.Button(left, "🎁", Theme.Colors.Red, actions.ClaimGift, {
 		Name = "Gift",
-		Size = UDim2.fromOffset(86, 40),
 		LayoutOrder = 10,
 		MaxText = 18,
 	})
 	refs.Gift = gift
-	local daily = Theme.Button(left, "📅 Daily", Theme.Colors.Gold, actions.ClaimDaily, {
+	local daily = Theme.Button(left, "📅\nDAILY", Theme.Colors.Gold, actions.ClaimDaily, {
 		Name = "Daily",
-		Size = UDim2.fromOffset(86, 40),
 		LayoutOrder = 11,
 		MaxText = 18,
 	})
@@ -138,8 +162,8 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	local right = Instance.new("Frame")
 	right.Name = "Actions"
 	right.BackgroundTransparency = 1
-	right.Size = UDim2.fromOffset(130, 210)
-	right.Position = UDim2.new(1, -10, 0.5, 0)
+	right.Size = UDim2.fromOffset(130, 200)
+	right.Position = UDim2.new(1, -10, 0.48, 0)
 	right.AnchorPoint = Vector2.new(1, 0.5)
 	right.Parent = screen
 	Theme.List(right, 10, false, Enum.HorizontalAlignment.Right)
@@ -159,24 +183,11 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 		MaxText = 22,
 	})
 	refs.Lock = lock
+end
 
-	-- Bottom banner
-	local banner = Theme.Frame({
-		Name = "Banner",
-		Size = UDim2.fromOffset(560, 54),
-		Position = UDim2.new(0.5, 0, 1, -150),
-		AnchorPoint = Vector2.new(0.5, 1),
-		Color = Theme.Colors.Accent,
-		Radius = 16,
-		Parent = screen,
-	})
-	banner.Visible = false
-	Theme.AutoScale(banner)
-	local bannerText = Theme.Text(banner, "", { MaxSize = 26 })
-	bannerText.Size = UDim2.new(1, -16, 1, -8)
-	bannerText.Position = UDim2.fromOffset(8, 4)
-	refs.Banner = banner
-	refs.BannerText = bannerText
+-- Container under the banner for small info panels (e.g. nest odds).
+function Hud.TopStack(): Frame
+	return refs.TopStack
 end
 
 function Hud.Update(state: any)
@@ -194,14 +205,17 @@ function Hud.UpdateTimers(state: any, now: number)
 		SpeedPotion = data.Potions.Speed,
 		ServerLuck = state.ServerLuckEndsAt or 0,
 	}
+	local anyBoost = false
 	for key, endsAt in timers do
 		local ref = refs[key]
 		local remaining = endsAt - now
 		ref.Frame.Visible = remaining > 0
 		if remaining > 0 then
+			anyBoost = true
 			ref.Label.Text = ref.Text .. "  " .. Format.Clock(remaining)
 		end
 	end
+	refs.BoostsRow.Visible = anyBoost
 
 	-- Lock button
 	local lockedUntil = state.LockedUntil or 0

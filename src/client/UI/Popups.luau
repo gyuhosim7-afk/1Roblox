@@ -17,11 +17,13 @@ local OddsView = require(script.Parent.OddsView)
 local Popups = {}
 
 local screen: ScreenGui? = nil
+local topStack: Frame? = nil
 local hatchQueue: { any } = {}
 local showingHatch = false
 
-function Popups.Mount(gui: ScreenGui)
+function Popups.Mount(gui: ScreenGui, stack: Frame)
 	screen = gui
+	topStack = stack
 end
 
 -- Hatch reveal ------------------------------------------------------------------
@@ -48,6 +50,7 @@ local function showNextHatch()
 		Radius = 24,
 		Parent = gui,
 	})
+	frame.ZIndex = 20
 	Theme.AutoScale(frame)
 	local stroke = frame:FindFirstChildOfClass("UIStroke")
 	if stroke then
@@ -144,6 +147,7 @@ function Popups.Message(title: string, text: string, color: Color3?)
 		Radius = 20,
 		Parent = gui,
 	})
+	frame.ZIndex = 20
 	Theme.AutoScale(frame)
 	local titleLabel = Theme.Text(frame, title, { MaxSize = 32, Color = color or Theme.Colors.Gold })
 	titleLabel.Size = UDim2.new(1, -20, 0, 50)
@@ -177,6 +181,7 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 		Parent = gui,
 	})
 	royalFrame = frame
+	frame.ZIndex = 20
 	Theme.AutoScale(frame)
 	local zone = Config.Zones[math.clamp(state.Data.BestZone, 1, #Config.Zones)]
 	local luck = state.Luck or 1
@@ -190,7 +195,7 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 	local info = Theme.Text(
 		frame,
 		"Rare or better guaranteed. " .. OddsView.LuckText(luck) .. ". " .. OddsView.Disclaimer,
-		{ MaxSize = 15, Color = Theme.Colors.SubText }
+		{ MaxSize = 18, Color = Theme.Colors.SubText }
 	)
 	info.Size = UDim2.new(1, -20, 0, 40)
 	info.Position = UDim2.fromOffset(10, 52)
@@ -218,13 +223,13 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 	Theme.SetButtonEnabled(gemButton, state.Data.Gems >= Config.GemShop.RoyalEgg, Theme.Colors.Blue)
 end
 
--- Nest odds panel -------------------------------------------------------------------
+-- Nest odds panel (sits in the HUD's top stack, two compact columns) -----------------------
 local nestPanel: Frame? = nil
 local nestPanelKey: string? = nil
 
 function Popups.NestOdds(eggId: string?, state: any?)
-	local gui = screen
-	if not gui then
+	local stack = topStack
+	if not stack then
 		return
 	end
 	local luck = if state then state.Luck or 1 else 1
@@ -241,31 +246,57 @@ function Popups.NestOdds(eggId: string?, state: any?)
 		return
 	end
 	local egg = Config.Eggs[eggId]
+	local entries = Odds.EggOdds(eggId, luck)
+	local rows = math.ceil(#entries / 2) + 1
 	local frame = Theme.Frame({
 		Name = "NestOdds",
-		Size = UDim2.fromOffset(330, 330),
-		Position = UDim2.new(1, -150, 0, 70),
-		AnchorPoint = Vector2.new(1, 0),
+		Size = UDim2.fromOffset(600, 34 + rows * 26),
 		Color = Theme.Colors.Background,
-		Radius = 16,
-		Parent = gui,
+		Radius = 14,
+		LayoutOrder = 4,
+		Parent = stack,
 	})
 	frame.BackgroundTransparency = 0.15
-	Theme.AutoScale(frame)
 	nestPanel = frame
-	local title = Theme.Text(frame, egg.Name .. " odds", { MaxSize = 22, Color = Theme.Hex(egg.SpotColor) })
-	title.Size = UDim2.new(1, -16, 0, 30)
+	local title = Theme.Text(frame, egg.Name .. " odds" .. (if luck > 1 then "  (Luck x" .. Format.Number(luck) .. ")" else ""), {
+		MaxSize = 18,
+		Color = Theme.Hex(egg.SpotColor),
+	})
+	title.Size = UDim2.new(1, -16, 0, 26)
 	title.Position = UDim2.fromOffset(8, 4)
-	local luckLabel = Theme.Text(frame, OddsView.LuckText(luck), { MaxSize = 13, Color = Theme.Colors.Gold })
-	luckLabel.Size = UDim2.new(1, -16, 0, 18)
-	luckLabel.Position = UDim2.fromOffset(8, 34)
-	local list = Instance.new("Frame")
-	list.BackgroundTransparency = 1
-	list.Size = UDim2.new(1, -12, 1, -58)
-	list.Position = UDim2.fromOffset(6, 54)
-	list.Parent = frame
-	Theme.List(list, 3)
-	OddsView.Build(list, Odds.EggOdds(eggId, luck), Odds.MutationOdds(luck), state.Data.Discovered, 0)
+	local grid = Instance.new("Frame")
+	grid.BackgroundTransparency = 1
+	grid.Size = UDim2.new(1, -12, 1, -34)
+	grid.Position = UDim2.fromOffset(6, 30)
+	grid.Parent = frame
+	local layout = Instance.new("UIGridLayout")
+	layout.CellSize = UDim2.fromOffset(290, 24)
+	layout.CellPadding = UDim2.fromOffset(6, 2)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = grid
+	for index, entry in entries do
+		local def = Config.Slimes[entry.Slime]
+		local known = state.Data.Discovered[entry.Slime] == true
+		local cell = Theme.Text(
+			grid,
+			(if known then def.Name else "???") .. " (" .. def.Rarity .. "): " .. Format.Percent(entry.Chance),
+			{ MaxSize = 16, Color = Theme.Hex(Config.Rarities[def.Rarity].Color), Align = Enum.TextXAlignment.Left, LayoutOrder = index }
+		)
+		cell.Size = UDim2.fromOffset(290, 24)
+	end
+	local mutations = {}
+	for _, m in Odds.MutationOdds(luck) do
+		if m.Mutation ~= "None" then
+			table.insert(mutations, (Config.Mutations :: any)[m.Mutation].Name .. " " .. Format.Percent(m.Chance))
+		end
+	end
+	local mutationCell = Theme.Text(grid, "Mutations: " .. table.concat(mutations, ", "), {
+		MaxSize = 16,
+		Color = Theme.Colors.Gold,
+		Align = Enum.TextXAlignment.Left,
+		LayoutOrder = 99,
+	})
+	mutationCell.Size = UDim2.fromOffset(290, 24)
 end
 
 return Popups

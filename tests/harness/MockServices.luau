@@ -413,7 +413,9 @@ function MockServices.install(world)
 					for key, value in goals do
 						inst[key] = value
 					end
-					completed:Fire(roblox.Enum.PlaybackState.Completed)
+					world.task.defer(function()
+						completed:Fire(roblox.Enum.PlaybackState.Completed)
+					end)
 				end,
 				Cancel = function() end,
 				Pause = function() end,

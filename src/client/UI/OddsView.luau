@@ -46,7 +46,7 @@ function OddsView.Build(
 		order += 1
 		local def = Config.Slimes[entry.Slime]
 		local known = discovered == nil or discovered[entry.Slime] == true
-		local name = if known then def.Name else "??? (" .. def.Rarity .. ")"
+		local name = if known then def.Name else "???"
 		local rarityColor = Theme.Hex(Config.Rarities[def.Rarity].Color)
 		row(parent, name .. "  <font size=\"14\">" .. def.Rarity .. "</font>", Format.Percent(entry.Chance), rarityColor, order)
 	end
@@ -55,10 +55,10 @@ function OddsView.Build(
 	for _, m in mutations do
 		if m.Mutation ~= "None" then
 			local mdef = (Config.Mutations :: any)[m.Mutation]
-			table.insert(mutationText, mdef.Name .. " (x" .. mdef.Multiplier .. "): " .. Format.Percent(m.Chance))
+			table.insert(mutationText, mdef.Name .. " x" .. mdef.Multiplier .. ": " .. Format.Percent(m.Chance))
 		end
 	end
-	row(parent, "Mutations: " .. table.concat(mutationText, "   "), "", Theme.Colors.Gold, order, 30)
+	row(parent, "Mutations  " .. table.concat(mutationText, "   "), "", Theme.Colors.Gold, order, 30)
 	return order
 end
 

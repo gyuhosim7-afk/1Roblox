@@ -291,6 +291,7 @@ function Theme.Window(screen: Instance, title: string, size: Vector2, onClose: (
 		Parent = screen,
 	})
 	frame.Visible = false
+	frame.ZIndex = 10
 	Theme.AutoScale(frame)
 	local header = Theme.Frame({
 		Name = "Header",

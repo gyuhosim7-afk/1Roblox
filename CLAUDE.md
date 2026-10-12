@@ -38,7 +38,12 @@ Roblox game built with Rojo + Luau. Owner does not code: talk to them in short, 
 ## Commands
 - `scripts/setup.sh` — install toolchain (rojo, lune, selene, stylua via cargo; luau-lsp from source).
 - `scripts/check.sh` — format check, selene lint, luau-lsp type check, Lune tests, rojo build. Must pass before commit.
-- `lune run tests/run` — tests only. `lune run tools/simulate` — balance simulation.
+- `lune run tests/run [filter]` — tests only. `lune run tools/simulate` — balance simulation.
+- UI preview (see the real UI without Studio): `lune run tools/ui_preview 844 390 shop build/ui/shop.html`
+  then `NODE_PATH=$(npm root -g) node tools/screenshot.js build/ui/shop.html out.png 844 390`.
+  Scenes: hud, shop, upgrades, slimes, index, rebirth, royal, hatch, nest. 844x390 = phone landscape.
+- Map preview: `lune run tools/map_preview -290 820 build/ui/map.html` (top-down), part count: `lune run tools/count_parts`.
+- When piping check output, use `set -o pipefail` so a failing check is not hidden.
 
 ## Conventions
 - Luau, `--!strict` where practical, tabs (StyLua). Modules return a table; services expose `Init()`/`Start()`.

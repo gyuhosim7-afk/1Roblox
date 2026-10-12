@@ -127,7 +127,7 @@ function UIController.Init()
 		end,
 	})
 	Toasts.Mount(screen)
-	Popups.Mount(screen)
+	Popups.Mount(screen, Hud.TopStack())
 	windows.Shop = ShopWindow.Create(screen, ctx)
 	windows.Upgrades = UpgradeWindow.Create(screen, ctx)
 	windows.Slimes = InventoryWindow.Create(screen, ctx)

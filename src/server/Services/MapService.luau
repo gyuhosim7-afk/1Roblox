@@ -545,7 +545,7 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 	-- Decor on both sides
 	local decor = Build.Folder("Decor", folder)
 	local builder = DECOR[def.Decor] or DECOR.Meadow
-	local count = math.floor(length / 22)
+	local count = math.floor(length / 14)
 	for _ = 1, count do
 		for _, side in { -1, 1 } do
 			local x = side * rng:NextNumber(halfRoad + 8, halfRoad + sideWidth - 6)
@@ -623,6 +623,16 @@ function MapService.Init()
 	table.clear(MapService.Gates)
 
 	local rng = (Random.new(1337) :: any) :: Rng
+	-- Big ground under everything so no void shows past the play area.
+	local totalLength = MapLayout.RoadEndZ - MapLayout.RoadStartZ + 400
+	Build.Part({
+		Name = "Baseplate",
+		Size = Vector3.new(1400, 2, totalLength),
+		Position = Vector3.new(0, GROUND_Y - 1.6, (MapLayout.RoadEndZ + MapLayout.RoadStartZ) / 2),
+		Color = "#4C8C3F",
+		Material = Enum.Material.Grass,
+		Parent = root,
+	})
 	buildHome(root)
 	local zonesFolder = Build.Folder("Zones", root)
 	for zoneIndex = 1, #Config.Zones do

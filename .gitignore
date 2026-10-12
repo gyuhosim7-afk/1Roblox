@@ -6,3 +6,4 @@ roblox.yml
 globalTypes.d.luau
 .luau-lsp-cache/
 node_modules/
+build/ui/

@@ -49,13 +49,13 @@ return function(t)
 			s.session.Data.Gems = 1234
 			s.PlayerService.MarkDirty(s.player, true)
 			s.world:Advance(1)
-			local gems = s.gui.TopBar.Gems.Value
+			local gems = s.gui.TopStack.TopBar.Gems.Value
 			expect(gems.Text).toBe("1.23K")
-			local speed = s.gui.TopBar.Speed.Value
+			local speed = s.gui.TopStack.TopBar.Speed.Value
 			expect(tonumber(speed.Text) ~= nil).toBe(true)
 			-- tutorial banner is visible for a new player
-			expect(s.gui.Banner.Visible).toBe(true)
-			expect(findText(s.gui.Banner, "steal an egg") ~= nil).toBe(true)
+			expect(s.gui.TopStack.Banner.Visible).toBe(true)
+			expect(findText(s.gui.TopStack.Banner, "steal an egg") ~= nil).toBe(true)
 		end)
 
 		it("opens and refreshes every window without errors", function()
@@ -126,10 +126,10 @@ return function(t)
 			local nest = s.EggService.GetNests()[1]
 			s.player.Character:PivotTo(CFrame.new(nest.Position + Vector3.new(0, 2, 4)))
 			s.world:Advance(0.6)
-			expect(s.gui:FindFirstChild("NestOdds") ~= nil).toBe(true)
+			expect(s.gui:FindFirstChild("NestOdds", true) ~= nil).toBe(true)
 			s.player.Character:PivotTo(CFrame.new(0, 3, -200))
 			s.world:Advance(0.6)
-			expect(s.gui:FindFirstChild("NestOdds")).toBeNil()
+			expect(s.gui:FindFirstChild("NestOdds", true)).toBeNil()
 		end)
 
 		it("sends requests from buttons to the server", function()
