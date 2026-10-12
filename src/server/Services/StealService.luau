@@ -100,7 +100,7 @@ function StealService.Lock(player: Player): (boolean, string?)
 	return true, "Base locked for " .. Format.Duration(seconds) .. "!"
 end
 
-local function canBonk(attacker: Player, target: Player, attackerPlot: PlotService.PlotState?): boolean
+local function canBonk(target: Player, attackerPlot: PlotService.PlotState?): boolean
 	if EggService.CarryOf(target) then
 		return true
 	end
@@ -126,7 +126,7 @@ function StealService.Bonk(attacker: Player): (boolean, string?)
 		local target = session.Player
 		local targetRoot = rootOf(target)
 		if target ~= attacker and targetRoot and (targetRoot.Position - root.Position).Magnitude <= Config.Steal.BonkRange then
-			if canBonk(attacker, target, attackerPlot) then
+			if canBonk(target, attackerPlot) then
 				local away = targetRoot.Position - root.Position
 				local flat = Vector3.new(away.X, 0, away.Z)
 				local direction = if flat.Magnitude > 0.01 then flat.Unit else Vector3.new(0, 0, 1)
