@@ -46,7 +46,7 @@ end
 -- Real Humanoid.WalkSpeed for a Speed stat value.
 function Formulas.WalkSpeed(speed: number, carryMultiplier: number?): number
 	local s = Config.Speed
-	local walk = math.min(s.WalkMax, s.WalkBase + s.WalkFactor * math.sqrt(math.max(0, speed)))
+	local walk = math.min(s.WalkMax, s.WalkBase + s.WalkFactor * math.max(0, speed) ^ s.WalkExponent)
 	return walk * (carryMultiplier or 1)
 end
 
