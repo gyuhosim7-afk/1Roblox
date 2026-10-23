@@ -75,10 +75,15 @@
 
 ## 13단계. 마무리
 - [x] 진행 시뮬레이션(Lune)으로 밸런스 조정 (무료: 화산 24분, 수정 동굴 3시간, 공허 17시간 / 유료 약 1.8배 빠름)
-- [ ] 처음부터 끝까지 시나리오 테스트(신규 → 환생 → 훔치기 → 구매)
-- [ ] Studio 자체 점검 스크립트(SelfTest: Studio에서 실행 시 로그로 PASS/FAIL)
-- [ ] 최종 빌드 `build/StealASlime.rbxl`, 출시 안내 docs/LAUNCH.md
+- [x] 처음부터 끝까지 시나리오 테스트(신규 → 환생 → 훔치기 → 구매 → 재접속)
+- [x] Studio 자체 점검 스크립트(SelfTest: Studio에서 실행 시 로그로 PASS/FAIL)
+- [x] 최종 빌드 `build/StealASlime.rbxl`, 출시 안내 docs/LAUNCH.md
+
+## 다음 단계 (내 컴퓨터 + Studio 연결 세션에서)
+- [ ] 실제 Studio 플레이 테스트, 3D 모습·UI 디자인 다듬기, 아이콘 이미지 업로드
+- [ ] 게임패스/상품 ID를 Config에 넣고 출시 (docs/LAUNCH.md)
 
 ## 진행 기록
 - 2026-10-12: 조사, 기획, 작업 목록 작성.
 - 2026-10-12: 개발 환경 완성 (Rojo 빌드, Lune 테스트 하네스, selene, luau-lsp 타입검사). Config/Format/Formulas/Odds 작성 + 테스트 26개 통과.
+- 2026-10-23: 밸런스 확정(무료 공허 약 17시간, 유료 약 1.8배), 전체 시나리오 테스트, SelfTest, LAUNCH.md. 테스트 105개 통과.
