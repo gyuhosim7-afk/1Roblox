@@ -136,8 +136,8 @@ return function(t)
 		it("zone unlocking follows speed and rebirth requirements", function()
 			expect(Formulas.BestZone(0, 0)).toBe(1)
 			expect(Formulas.BestZone(100, 0)).toBe(2)
-			expect(Formulas.BestZone(1e9, 0)).toBe(6) -- Void needs 2 rebirths
-			expect(Formulas.BestZone(1e9, 2)).toBe(7)
+			expect(Formulas.BestZone(1e9, 2)).toBe(6) -- Void needs 3 rebirths
+			expect(Formulas.BestZone(1e9, 3)).toBe(7)
 		end)
 		it("offline earnings respect cap, rate and minimum", function()
 			expect(Formulas.OfflineEarnings(100, 30)).toBe(0)
