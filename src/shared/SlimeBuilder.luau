@@ -1,9 +1,12 @@
 --!strict
--- Builds a slime model entirely from parts: squishy body, eyes, cheeks and accessories.
+-- Builds a slime model. Uses the AI-generated mesh for the kind when MeshLibrary has it,
+-- otherwise builds it from parts: squishy body, eyes, cheeks and accessories.
 -- Front of the slime is local -Z. All parts are anchored (static display).
 
 local Config = require(script.Parent.Config)
 local Build = require(script.Parent.Build)
+local MeshLibrary = require(script.Parent.MeshLibrary)
+local ModelAssets = require(script.Parent.ModelAssets)
 
 local SlimeBuilder = {}
 
@@ -219,6 +222,28 @@ function SlimeBuilder.Scale(kind: string): number
 	return (def.Size or RARITY_SCALE[def.Rarity] or 1)
 end
 
+-- Mesh version: one textured MeshPart named Body (Gold = shiny gold statue, Rainbow = recolored).
+local function buildFromMesh(model: Model, body: MeshPart, kind: string, mutation: string?, scale: number)
+	MeshLibrary.Fit(body, Vector3.new(3.6, 3.4, 3.6) * scale)
+	body.Name = "Body"
+	local yaw = ModelAssets[kind] and ModelAssets[kind].Yaw or 0
+	body.CFrame = CFrame.new(0, body.Size.Y / 2, 0) * CFrame.Angles(0, math.rad(yaw), 0)
+	body.Anchored = true
+	body.CanCollide = false
+	body.CastShadow = false
+	if mutation == "Gold" then
+		body.TextureID = ""
+		body.Color = GOLD
+		body.Material = Enum.Material.Foil
+		body.Reflectance = 0.2
+	elseif mutation == "Rainbow" then
+		body.TextureID = ""
+		body.Material = Enum.Material.SmoothPlastic
+	end
+	body.Parent = model
+	model.PrimaryPart = body
+end
+
 -- Returns a Model whose pivot is the bottom-center of the slime.
 function SlimeBuilder.Build(kind: string, mutation: string?, extraScale: number?): Model
 	local def = Config.Slimes[kind]
@@ -226,6 +251,13 @@ function SlimeBuilder.Build(kind: string, mutation: string?, extraScale: number?
 	local scale = SlimeBuilder.Scale(kind) * (extraScale or 1)
 	local model = Instance.new("Model")
 	model.Name = kind
+
+	local mesh = MeshLibrary.Get(kind)
+	if mesh then
+		buildFromMesh(model, mesh, kind, mutation, scale)
+		SlimeBuilder.Decorate(model, mesh, kind, mutation, scale)
+		return model
+	end
 
 	local baseColor = Build.Hex(def.Color)
 	local color = if mutation == "Gold" then GOLD else baseColor
@@ -287,6 +319,14 @@ function SlimeBuilder.Build(kind: string, mutation: string?, extraScale: number?
 		end
 	end
 
+	SlimeBuilder.Decorate(model, body, kind, mutation, scale)
+	return model
+end
+
+-- Glow, sparkles and attributes shared by both builders.
+function SlimeBuilder.Decorate(model: Model, body: BasePart, kind: string, mutation: string?, scale: number)
+	local def = Config.Slimes[kind]
+	local baseColor = Build.Hex(def.Color)
 	if def.Glow or mutation == "Rainbow" then
 		local light = Instance.new("PointLight")
 		light.Color = baseColor
@@ -314,7 +354,6 @@ function SlimeBuilder.Build(kind: string, mutation: string?, extraScale: number?
 		model:AddTag("RainbowSlime")
 	end
 	model.WorldPivot = CFrame.new()
-	return model
 end
 
 return SlimeBuilder

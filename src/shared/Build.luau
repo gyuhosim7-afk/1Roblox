@@ -148,7 +148,13 @@ function Build.Label(parent: Instance, text: string, color: Color3?): TextLabel
 	label.Text = text
 	label.TextScaled = true
 	label.TextColor3 = color or Color3.new(1, 1, 1)
-	label.TextStrokeTransparency = 0.2
+	label.TextStrokeTransparency = 1
+	label.RichText = true
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 2.5
+	stroke.Color = Color3.fromRGB(28, 22, 48)
+	stroke.LineJoinMode = Enum.LineJoinMode.Round
+	stroke.Parent = label
 	label.Parent = parent
 	return label
 end

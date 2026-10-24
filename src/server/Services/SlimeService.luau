@@ -38,6 +38,10 @@ function SlimeService.IsFull(player: Player): boolean
 	return session ~= nil and #session.Data.Slimes >= Config.Base.MaxSlimes
 end
 
+local GLOW_FULL = Build.Hex("#3DFF6E")
+local GLOW_FREE = Build.Hex("#FFFFFF")
+local GLOW_LOCKED = Build.Hex("#FF3D7F")
+
 local function makeLabel(model: Model, kind: string, mutation: string)
 	local def = Config.Slimes[kind]
 	local body = model.PrimaryPart
@@ -59,11 +63,16 @@ function SlimeService.Arrange(player: Player)
 	if not session or not plot then
 		return
 	end
-	local chosen = SlimeInventory.PedestalSlimes(session.Data.Slimes, pedestalCount(session))
+	local unlocked = pedestalCount(session)
+	local chosen = SlimeInventory.PedestalSlimes(session.Data.Slimes, unlocked)
 	local models = pedestalModels[plot] or {}
 	pedestalModels[plot] = models
 	for slotIndex, slot in plot.Pedestals do
 		local slime = chosen[slotIndex]
+		local glow = slot.Part:FindFirstChild("Glow") :: BasePart?
+		if glow then
+			glow.Color = if slime then GLOW_FULL elseif slotIndex <= unlocked then GLOW_FREE else GLOW_LOCKED
+		end
 		local existing = models[slotIndex]
 		if existing and (not slime or existing.Id ~= slime.Id) then
 			existing.Model:Destroy()
@@ -85,6 +94,12 @@ function SlimeService.Arrange(player: Player)
 end
 
 local function clearPlot(plot: PlotService.PlotState)
+	for _, slot in plot.Pedestals do
+		local glow = slot.Part:FindFirstChild("Glow") :: BasePart?
+		if glow then
+			glow.Color = GLOW_FREE
+		end
+	end
 	local models = pedestalModels[plot]
 	if models then
 		for _, entry in models do

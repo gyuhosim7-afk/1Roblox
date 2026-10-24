@@ -3,9 +3,12 @@
 -- every top-level element gets a UIScale so it fits phones and big screens alike.
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
+
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 
 local Theme = {}
 
@@ -17,6 +20,8 @@ Theme.Colors = {
 	Panel = Color3.fromRGB(42, 42, 64),
 	PanelLight = Color3.fromRGB(58, 58, 86),
 	Stroke = Color3.fromRGB(16, 16, 26),
+	Outline = Color3.fromRGB(28, 22, 48),
+	Window = Color3.fromRGB(46, 54, 102),
 	Text = Color3.fromRGB(255, 255, 255),
 	SubText = Color3.fromRGB(200, 205, 215),
 	Accent = Color3.fromRGB(255, 176, 0),
@@ -178,6 +183,7 @@ export type TextProps = {
 	LayoutOrder: number?,
 	Wrap: boolean?,
 	Stroke: boolean?,
+	StrokeThickness: number?,
 }
 
 function Theme.Text(parent: Instance, text: string, props: TextProps?): TextLabel
@@ -202,12 +208,45 @@ function Theme.Text(parent: Instance, text: string, props: TextProps?): TextLabe
 	constraint.Parent = label
 	if p.Stroke ~= false then
 		local stroke = Instance.new("UIStroke")
-		stroke.Thickness = 2
+		stroke.Thickness = p.StrokeThickness or 2
 		stroke.Color = Theme.Colors.Stroke
+		stroke.LineJoinMode = Enum.LineJoinMode.Round
 		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 		stroke.Parent = label
 	end
 	label.Parent = parent
+	return label
+end
+
+-- AI-made icon image from Config.Icons (key like "Shop", "Coins").
+function Theme.Icon(parent: Instance, key: string, size: UDim2?, position: UDim2?, anchor: Vector2?): ImageLabel
+	local image = Instance.new("ImageLabel")
+	image.Name = "Icon"
+	image.BackgroundTransparency = 1
+	image.Image = (Config.Icons :: any)[key] or ""
+	image.ScaleType = Enum.ScaleType.Fit
+	image.Size = size or UDim2.fromOffset(40, 40)
+	image.Position = position or UDim2.new()
+	image.AnchorPoint = anchor or Vector2.zero
+	image.ZIndex = 2
+	image.Parent = parent
+	return image
+end
+
+-- Small red notification bubble in the top-right corner of a button.
+function Theme.Badge(parent: Instance, text: string?): TextLabel
+	local badge = Instance.new("Frame")
+	badge.Name = "Badge"
+	badge.Size = UDim2.fromOffset(30, 30)
+	badge.Position = UDim2.new(1, 6, 0, -6)
+	badge.AnchorPoint = Vector2.new(1, 0)
+	badge.BackgroundColor3 = Theme.Colors.Red
+	badge.ZIndex = 5
+	Theme.Corner(badge, 15)
+	Theme.Stroke(badge, 2.5, Color3.new(1, 1, 1))
+	local label = Theme.Text(badge, text or "!", { Name = "Count", MaxSize = 18, StrokeThickness = 1.5 })
+	label.ZIndex = 6
+	badge.Parent = parent
 	return label
 end
 
@@ -233,10 +272,11 @@ function Theme.Button(parent: Instance, text: string, color: Color3, onClick: ()
 	button.Text = ""
 	button.LayoutOrder = p.LayoutOrder or 0
 	button.BorderSizePixel = 0
-	Theme.Corner(button, p.Radius or 12)
-	Theme.Stroke(button, 3)
-	Theme.Gradient(button, Color3.new(1, 1, 1), Color3.fromRGB(190, 190, 190))
-	local label = Theme.Text(button, text, { Name = "Label", MaxSize = p.MaxText or 26 })
+	Theme.Corner(button, p.Radius or 14)
+	Theme.Stroke(button, 3.5, Theme.Colors.Outline)
+	local gradient = Theme.Gradient(button, Color3.new(1, 1, 1), Color3.fromRGB(170, 170, 170))
+	gradient.Transparency = NumberSequence.new(0, 0)
+	local label = Theme.Text(button, text, { Name = "Label", MaxSize = p.MaxText or 26, StrokeThickness = 2.5 })
 	label.Size = UDim2.new(1, -12, 1, -8)
 	label.Position = UDim2.fromOffset(6, 4)
 	local scale = Instance.new("UIScale")
@@ -272,6 +312,14 @@ function Theme.SetButtonEnabled(button: TextButton, enabled: boolean, color: Col
 	button.AutoButtonColor = false
 end
 
+local WINDOW_ICONS: { [string]: string } = {
+	Shop = "Shop",
+	Upgrades = "Upgrade",
+	Slimes = "Slime",
+	["Index & Odds"] = "Index",
+	Rebirth = "Rebirth",
+}
+
 export type Window = {
 	Frame: Frame,
 	Content: Frame,
@@ -286,24 +334,34 @@ function Theme.Window(screen: Instance, title: string, size: Vector2, onClose: (
 		Size = UDim2.fromOffset(size.X, size.Y),
 		Position = UDim2.fromScale(0.5, 0.52),
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Color = Theme.Colors.Background,
-		Radius = 18,
+		Color = Theme.Colors.Window,
+		Radius = 22,
 		Parent = screen,
 	})
 	frame.Visible = false
 	frame.ZIndex = 10
+	local outline = frame:FindFirstChildOfClass("UIStroke")
+	if outline then
+		outline.Thickness = 5
+		outline.Color = Theme.Colors.Outline
+	end
+	Theme.Gradient(frame, Color3.fromRGB(255, 255, 255), Color3.fromRGB(165, 170, 205))
 	Theme.AutoScale(frame)
 	local header = Theme.Frame({
 		Name = "Header",
-		Size = UDim2.new(1, 0, 0, 56),
+		Size = UDim2.new(1, 0, 0, 60),
 		Color = Theme.Colors.Accent,
-		Radius = 18,
+		Radius = 22,
 		Parent = frame,
 	})
-	Theme.Gradient(header, Color3.new(1, 1, 1), Color3.fromRGB(200, 200, 200))
-	local titleLabel = Theme.Text(header, title, { MaxSize = 34 })
-	titleLabel.Size = UDim2.new(1, -120, 1, -10)
-	titleLabel.Position = UDim2.fromOffset(60, 5)
+	Theme.Gradient(header, Color3.new(1, 1, 1), Color3.fromRGB(205, 160, 60))
+	local iconKey = WINDOW_ICONS[title]
+	if iconKey then
+		Theme.Icon(header, iconKey, UDim2.fromOffset(72, 72), UDim2.new(0, 10, 0.5, -4), Vector2.new(0, 0.5))
+	end
+	local titleLabel = Theme.Text(header, title, { MaxSize = 38, StrokeThickness = 3 })
+	titleLabel.Size = UDim2.new(1, -180, 1, -10)
+	titleLabel.Position = UDim2.fromOffset(90, 5)
 	Theme.Button(header, "X", Theme.Colors.Red, onClose, {
 		Size = UDim2.fromOffset(48, 48),
 		Position = UDim2.new(1, -6, 0.5, 0),

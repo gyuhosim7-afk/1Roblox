@@ -1,11 +1,13 @@
 --!strict
 -- Client-side world polish: speed gates open locally, incubator countdowns, per-player prompt
--- visibility, bouncing / rainbow slimes, the guide beam and the nest odds panel.
+-- visibility, bouncing / rainbow slimes, the guide beam, the nest odds panel and per-zone sky.
 
 local CollectionService = game:GetService("CollectionService")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -285,6 +287,47 @@ local function updateGuide()
 	end
 end
 
+-- Zone sky ------------------------------------------------------------------------
+local currentAmbience = -1
+
+local function hex(value: string): Color3
+	local clean = value:gsub("#", "")
+	return Color3.fromRGB(
+		tonumber(clean:sub(1, 2), 16) or 255,
+		tonumber(clean:sub(3, 4), 16) or 255,
+		tonumber(clean:sub(5, 6), 16) or 255
+	)
+end
+
+-- Tweens the sky to the look of the zone the player stands in (home uses the first zone).
+local function updateAmbience()
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if not root then
+		return
+	end
+	local zoneIndex = math.max(1, MapLayout.ZoneAtZ(root.Position.Z))
+	if zoneIndex == currentAmbience then
+		return
+	end
+	currentAmbience = zoneIndex
+	local ambience = Config.Zones[zoneIndex].Ambience
+	local info = TweenInfo.new(2.5, Enum.EasingStyle.Sine)
+	TweenService:Create(Lighting, info, { ClockTime = ambience.ClockTime, Brightness = ambience.Brightness }):Play()
+	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
+	if atmosphere then
+		TweenService:Create(atmosphere, info, {
+			Density = ambience.Density,
+			Haze = ambience.Haze,
+			Color = hex(ambience.Atmosphere),
+		}):Play()
+	end
+	local grading = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+	if grading then
+		TweenService:Create(grading, info, { TintColor = hex(ambience.Tint) }):Play()
+	end
+end
+
 function WorldController.Init() end
 
 function WorldController.Start()
@@ -323,6 +366,7 @@ function WorldController.Start()
 			task.wait(0.25)
 			updateIncubatorLabels()
 			updateGuide()
+			updateAmbience()
 			-- re-apply prompt rules (lock state changes over time)
 			for _, part in CollectionService:GetTagged("Incubator") do
 				if part:IsA("BasePart") then

@@ -61,6 +61,7 @@ local function buildPlot(parent: Instance, layout: MapLayout.PlotLayout): PlotSt
 		Color = floorColor,
 		Parent = model,
 	})
+	floor.TopSurface = Enum.SurfaceType.Studs
 	model.PrimaryPart = floor
 
 	-- Walls: back and both sides (front stays open toward the road)
@@ -80,7 +81,21 @@ local function buildPlot(parent: Instance, layout: MapLayout.PlotLayout): PlotSt
 			Color = wallColor,
 			Parent = model,
 		})
+		Build.Part({
+			Name = "WallTrim",
+			Size = Vector3.new(2, 1, size + 1),
+			CFrame = localCFrame(plotCFrame, side * (half - 0.5), 1 + wallHeight + 0.5, 0),
+			Color = "#FFFFFF",
+			Parent = model,
+		})
 	end
+	Build.Part({
+		Name = "WallTrim",
+		Size = Vector3.new(size + 1, 1, 2),
+		CFrame = localCFrame(plotCFrame, 0, 1 + wallHeight + 0.5, half - 0.5),
+		Color = "#FFFFFF",
+		Parent = model,
+	})
 
 	-- Sign
 	local sign = Build.Part({
@@ -136,9 +151,21 @@ local function buildPlot(parent: Instance, layout: MapLayout.PlotLayout): PlotSt
 			Shape = Enum.PartType.Cylinder,
 			Size = Vector3.new(1.2, 4.6, 4.6),
 			CFrame = localCFrame(plotCFrame, point.X, 1.6, point.Z) * CFrame.Angles(0, 0, math.rad(90)),
-			Color = Build.Shade(floorColor, -0.1),
-			Material = Enum.Material.Marble,
+			Color = "#F5F5FA",
+			Material = Enum.Material.SmoothPlastic,
 			Parent = model,
+		})
+		-- glowing rim: green = slime on it, white = free, red = locked (needs Pedestals upgrade)
+		Build.Part({
+			Name = "Glow",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.5, 5.2, 5.2),
+			CFrame = localCFrame(plotCFrame, point.X, 1.3, point.Z) * CFrame.Angles(0, 0, math.rad(90)),
+			Color = "#FFFFFF",
+			Material = Enum.Material.Neon,
+			CanCollide = false,
+			CastShadow = false,
+			Parent = pedestal,
 		})
 		pedestal:SetAttribute("Slot", index)
 		pedestal:SetAttribute("Plot", layout.Index)

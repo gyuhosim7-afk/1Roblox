@@ -1,8 +1,10 @@
 --!strict
--- Builds an egg model from parts (ellipsoid shell with spots). Pivot is the egg's bottom.
+-- Builds an egg model: the AI-generated egg mesh when loaded, otherwise an ellipsoid shell with
+-- spots. Pivot is the egg's bottom.
 
 local Config = require(script.Parent.Config)
 local Build = require(script.Parent.Build)
+local MeshLibrary = require(script.Parent.MeshLibrary)
 
 local EggBuilder = {}
 
@@ -29,6 +31,18 @@ function EggBuilder.Build(eggId: string, scale: number?): Model
 
 	local model = Instance.new("Model")
 	model.Name = eggId .. "Egg"
+	local mesh = MeshLibrary.Get("Egg_" .. eggId)
+	if mesh then
+		MeshLibrary.Fit(mesh, Vector3.new(2.6, 3.2, 2.6) * s)
+		mesh.Name = "Shell"
+		mesh.CFrame = CFrame.new(0, mesh.Size.Y / 2, 0)
+		mesh.CastShadow = false
+		mesh.Parent = model
+		model.PrimaryPart = mesh
+		model:SetAttribute("Egg", eggId)
+		model.WorldPivot = CFrame.new()
+		return model
+	end
 	local origin = CFrame.new(0, 1.5 * s, 0)
 	local shell = Build.Ellipsoid({
 		Name = "Shell",

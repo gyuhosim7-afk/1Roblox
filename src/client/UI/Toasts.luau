@@ -17,13 +17,13 @@ local COLORS = {
 }
 local MAX_TOASTS = 4
 
--- Toasts stack up from the bottom-center of the screen, above windows.
+-- Toasts stack up above the speed bar at the bottom-center, above windows.
 function Toasts.Mount(screen: ScreenGui)
 	local frame = Instance.new("Frame")
 	frame.Name = "Toasts"
 	frame.BackgroundTransparency = 1
 	frame.Size = UDim2.fromOffset(520, 220)
-	frame.Position = UDim2.new(0.5, 0, 1, -8)
+	frame.Position = UDim2.new(0.5, 0, 1, -118)
 	frame.AnchorPoint = Vector2.new(0.5, 1)
 	frame.ZIndex = 30
 	frame.Parent = screen

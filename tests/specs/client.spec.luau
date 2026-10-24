@@ -53,9 +53,9 @@ return function(t)
 			s.session.Data.Gems = 1234
 			s.PlayerService.MarkDirty(s.player, true)
 			s.world:Advance(1)
-			local gems = s.gui.TopStack.TopBar.Gems.Value
+			local gems = s.gui.Menu.Currency.Gems.Value
 			expect(gems.Text).toBe("1.23K")
-			local speed = s.gui.TopStack.TopBar.Speed.Value
+			local speed = s.gui.SpeedBar.Speed.Value
 			expect(tonumber(speed.Text) ~= nil).toBe(true)
 			-- tutorial banner is visible for a new player
 			expect(s.gui.TopStack.Banner.Visible).toBe(true)

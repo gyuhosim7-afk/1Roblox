@@ -12,6 +12,7 @@ local Config = require(Shared.Config)
 local Build = require(Shared.Build)
 local MapLayout = require(Shared.MapLayout)
 local GuardMotion = require(Shared.GuardMotion)
+local MeshLibrary = require(Shared.MeshLibrary)
 
 local GuardController = {}
 
@@ -25,6 +26,22 @@ local function buildPatrol(guard: MapLayout.Guard): Model
 	local r = guard.Radius
 	local model = Instance.new("Model")
 	model.Name = guard.Id
+	local mesh = MeshLibrary.Get("Guard")
+	if mesh then
+		-- AI-made guard slime, facing -Z like the part version
+		MeshLibrary.Fit(mesh, Vector3.new(r * 2.2, r * 2.2, r * 2.2))
+		mesh.Name = "Body"
+		mesh.CFrame = CFrame.new(0, mesh.Size.Y / 2, 0)
+		mesh.Parent = model
+		model.PrimaryPart = mesh
+		local glow = Instance.new("PointLight")
+		glow.Color = Color3.fromRGB(255, 80, 80)
+		glow.Range = r * 3
+		glow.Parent = mesh
+		model.WorldPivot = CFrame.new()
+		model.Parent = folder
+		return model
+	end
 	local color = Build.Shade(Build.Hex(zone.AccentColor), -0.35)
 	local body = Build.Ellipsoid({
 		Name = "Body",
@@ -112,7 +129,26 @@ function GuardController.Init()
 	end
 end
 
+-- Meshes may arrive after the guards were first drawn: swap the part guards for mesh guards.
+local function upgradeToMeshes()
+	for _, visual in visuals do
+		if visual.Model then
+			visual.Model:Destroy()
+			visual.Model = buildPatrol(visual.Guard)
+		end
+	end
+end
+
 function GuardController.Start()
+	if not MeshLibrary.Has("Guard") then
+		local connection
+		connection = ReplicatedStorage.ChildAdded:Connect(function(child)
+			if child.Name == "MeshTemplates" then
+				connection:Disconnect()
+				upgradeToMeshes()
+			end
+		end)
+	end
 	local player = Players.LocalPlayer
 	RunService.RenderStepped:Connect(function()
 		local camera = Workspace.CurrentCamera

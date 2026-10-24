@@ -510,6 +510,16 @@ Config.RoyalEgg = {
 -- Zones (in order along the runway). GateSpeed = Speed needed to pass the gate.
 -- Guards only hit players who are carrying an egg.
 --------------------------------------------------------------------------------
+-- Look of the sky while standing in a zone (client tweens between these).
+export type Ambience = {
+	ClockTime: number,
+	Atmosphere: string, -- haze color
+	Density: number,
+	Haze: number,
+	Tint: string, -- color correction tint
+	Brightness: number,
+}
+
 export type ZoneDef = {
 	Id: string,
 	Name: string,
@@ -525,6 +535,7 @@ export type ZoneDef = {
 	SweeperGuards: number,
 	GuardRadius: number,
 	GuardPeriod: number, -- seconds for one full patrol / rotation (lower = faster)
+	Ambience: Ambience, -- sky and light while the player is in this zone
 }
 
 Config.Zones = {
@@ -543,6 +554,14 @@ Config.Zones = {
 		SweeperGuards = 0,
 		GuardRadius = 4,
 		GuardPeriod = 7,
+		Ambience = {
+			ClockTime = 14,
+			Atmosphere = "#C7E6FF",
+			Density = 0.28,
+			Haze = 0.6,
+			Tint = "#FFFFFF",
+			Brightness = 3,
+		},
 	},
 	{
 		Id = "Forest",
@@ -559,6 +578,14 @@ Config.Zones = {
 		SweeperGuards = 0,
 		GuardRadius = 4.5,
 		GuardPeriod = 6,
+		Ambience = {
+			ClockTime = 13,
+			Atmosphere = "#B5E3B0",
+			Density = 0.34,
+			Haze = 1.2,
+			Tint = "#F2FFF0",
+			Brightness = 2.8,
+		},
 	},
 	{
 		Id = "Desert",
@@ -575,6 +602,14 @@ Config.Zones = {
 		SweeperGuards = 1,
 		GuardRadius = 5,
 		GuardPeriod = 5.5,
+		Ambience = {
+			ClockTime = 15,
+			Atmosphere = "#FFE2B0",
+			Density = 0.32,
+			Haze = 1.4,
+			Tint = "#FFF6E6",
+			Brightness = 3.2,
+		},
 	},
 	{
 		Id = "Snow",
@@ -591,6 +626,14 @@ Config.Zones = {
 		SweeperGuards = 2,
 		GuardRadius = 5.5,
 		GuardPeriod = 5,
+		Ambience = {
+			ClockTime = 12.5,
+			Atmosphere = "#E3F2FF",
+			Density = 0.4,
+			Haze = 1.8,
+			Tint = "#F3F9FF",
+			Brightness = 3,
+		},
 	},
 	{
 		Id = "Volcano",
@@ -607,6 +650,14 @@ Config.Zones = {
 		SweeperGuards = 2,
 		GuardRadius = 6,
 		GuardPeriod = 4.5,
+		Ambience = {
+			ClockTime = 17.6,
+			Atmosphere = "#FF8A50",
+			Density = 0.42,
+			Haze = 2.2,
+			Tint = "#FFE2D2",
+			Brightness = 2.4,
+		},
 	},
 	{
 		Id = "Crystal",
@@ -623,6 +674,14 @@ Config.Zones = {
 		SweeperGuards = 3,
 		GuardRadius = 6.5,
 		GuardPeriod = 4,
+		Ambience = {
+			ClockTime = 19,
+			Atmosphere = "#B48CFF",
+			Density = 0.38,
+			Haze = 1.8,
+			Tint = "#F0E6FF",
+			Brightness = 2,
+		},
 	},
 	{
 		Id = "Void",
@@ -639,6 +698,14 @@ Config.Zones = {
 		SweeperGuards = 4,
 		GuardRadius = 7,
 		GuardPeriod = 3.6,
+		Ambience = {
+			ClockTime = 0,
+			Atmosphere = "#3A1F6B",
+			Density = 0.45,
+			Haze = 2.5,
+			Tint = "#E8DDFF",
+			Brightness = 1.6,
+		},
 	},
 } :: { ZoneDef }
 
@@ -822,6 +889,24 @@ Config.Network = {
 	RequestBurst = 20,
 	RequestsPerSecond = 10,
 	SyncInterval = 0.25,
+}
+
+--------------------------------------------------------------------------------
+-- UI icons (AI-generated for this game, uploaded with Studio; source PNGs in assets/icons)
+--------------------------------------------------------------------------------
+Config.Icons = {
+	Shop = "rbxassetid://82660667329425",
+	Rebirth = "rbxassetid://88478267932384",
+	Gift = "rbxassetid://138341103903513",
+	Coins = "rbxassetid://136480446209911",
+	Gems = "rbxassetid://117218110357194",
+	Speed = "rbxassetid://114008695666646",
+	Slime = "rbxassetid://133525396285334",
+	Egg = "rbxassetid://121749306355303",
+	Index = "rbxassetid://114756804798039",
+	Upgrade = "rbxassetid://121866982200693",
+	Lock = "rbxassetid://103384463058723",
+	Bonk = "rbxassetid://84912671360209",
 }
 
 Config.Tutorial = {
