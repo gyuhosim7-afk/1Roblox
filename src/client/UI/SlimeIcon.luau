@@ -1,13 +1,41 @@
 --!strict
--- A flat 2D slime icon (cheap to draw many of them, unlike 3D viewports).
+-- Slime icon for lists: the AI-made 3D slime in a small viewport (a black silhouette while still
+-- undiscovered), or a flat 2D slime when the mesh isn't loaded.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared.Config)
+local MeshLibrary = require(Shared.MeshLibrary)
+local SlimeBuilder = require(Shared.SlimeBuilder)
 local Theme = require(script.Parent.Theme)
 
 local SlimeIcon = {}
+
+local function viewportIcon(holder: Frame, kind: string, mutation: string?, hidden: boolean?)
+	local viewport = Instance.new("ViewportFrame")
+	viewport.Name = "Viewport"
+	viewport.BackgroundTransparency = 1
+	viewport.Size = UDim2.fromScale(1, 1)
+	viewport.Ambient = Color3.fromRGB(200, 200, 210)
+	viewport.LightColor = Color3.fromRGB(255, 255, 255)
+	viewport.LightDirection = Vector3.new(-0.4, -1, 0.6)
+	if hidden then
+		viewport.ImageColor3 = Color3.fromRGB(20, 18, 34)
+	end
+	local model = SlimeBuilder.Build(kind, if hidden then nil else mutation)
+	model.Parent = viewport
+	local extents = model:GetExtentsSize()
+	local radius = math.max(extents.X, extents.Y, extents.Z)
+	local camera = Instance.new("Camera")
+	camera.FieldOfView = 30
+	local target = Vector3.new(0, extents.Y * 0.48, 0)
+	-- the slime faces -Z, so look at it from the front and a little above
+	camera.CFrame = CFrame.lookAt(target + Vector3.new(radius * 0.35, radius * 0.45, -radius * 2.1), target)
+	camera.Parent = viewport
+	viewport.CurrentCamera = camera
+	viewport.Parent = holder
+end
 
 function SlimeIcon.Create(parent: Instance, kind: string, mutation: string?, size: number, hidden: boolean?): Frame
 	local def = Config.Slimes[kind]
@@ -15,6 +43,11 @@ function SlimeIcon.Create(parent: Instance, kind: string, mutation: string?, siz
 	holder.Name = "SlimeIcon"
 	holder.BackgroundTransparency = 1
 	holder.Size = UDim2.fromOffset(size, size)
+	if MeshLibrary.Has(kind) then
+		viewportIcon(holder, kind, mutation, hidden)
+		holder.Parent = parent
+		return holder
+	end
 
 	local body = Instance.new("Frame")
 	body.Name = "Body"

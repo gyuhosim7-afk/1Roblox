@@ -32,6 +32,6 @@ echo "== Rojo build"
 if have_rojo; then
   rojo build default.project.json -o build/StealASlime.rbxl
 else
-  echo "rojo can't run on this PC: skipped. Sync Studio and save build/StealASlime.rbxl from Studio."
+  lune run tools/build_place build/StealASlime.rbxl
 fi
 echo "All checks passed."

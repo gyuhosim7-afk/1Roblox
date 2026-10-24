@@ -138,7 +138,7 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	local left = Instance.new("Frame")
 	left.Name = "Menu"
 	left.BackgroundTransparency = 1
-	left.Size = UDim2.fromOffset(212, 560)
+	left.Size = UDim2.fromOffset(212, 360)
 	left.Position = UDim2.fromOffset(14, 6)
 	left.Parent = screen
 	Theme.List(left, 8, false, Enum.HorizontalAlignment.Left)
@@ -162,17 +162,17 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	local shop = tile(left, "Shop", "SHOP", "Shop", Theme.Colors.Gold, function()
 		actions.OpenWindow("Shop")
 	end, 2)
-	shop.Size = UDim2.fromOffset(204, 82)
+	shop.Size = UDim2.fromOffset(204, 64)
 	refs.MenuButtons.Shop = shop
 
 	local grid = Instance.new("Frame")
 	grid.Name = "Tiles"
 	grid.BackgroundTransparency = 1
-	grid.Size = UDim2.fromOffset(212, 290)
+	grid.Size = UDim2.fromOffset(212, 170)
 	grid.LayoutOrder = 3
 	grid.Parent = left
 	local gridLayout = Instance.new("UIGridLayout")
-	gridLayout.CellSize = UDim2.fromOffset(98, 88)
+	gridLayout.CellSize = UDim2.fromOffset(98, 74)
 	gridLayout.CellPadding = UDim2.fromOffset(8, 8)
 	gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	gridLayout.Parent = grid
@@ -193,9 +193,22 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	rebirthBadge.Size = UDim2.fromOffset(52, 26)
 	rebirthBadge.BackgroundColor3 = Color3.fromRGB(40, 36, 70)
 
-	refs.Gift = tile(grid, "Gift", "GIFT", "Gift", Color3.fromRGB(255, 120, 200), actions.ClaimGift, 10)
+	-- Top right: free rewards (kept off the left side so the phone thumbstick stays clear)
+	local rewards = Instance.new("Frame")
+	rewards.Name = "Rewards"
+	rewards.BackgroundTransparency = 1
+	rewards.Size = UDim2.fromOffset(196, 80)
+	rewards.Position = UDim2.new(1, -12, 0, 6)
+	rewards.AnchorPoint = Vector2.new(1, 0)
+	rewards.Parent = screen
+	local rewardList = Theme.List(rewards, 8, true, Enum.HorizontalAlignment.Right)
+	rewardList.SortOrder = Enum.SortOrder.LayoutOrder
+	Theme.AutoScale(rewards)
+	refs.Gift = tile(rewards, "Gift", "GIFT", "Gift", Color3.fromRGB(255, 120, 200), actions.ClaimGift, 2)
+	refs.Gift.Size = UDim2.fromOffset(92, 78)
 	refs.GiftBadge = Theme.Badge(refs.Gift, "!")
-	refs.Daily = tile(grid, "Daily", "DAILY", "Egg", Color3.fromRGB(255, 160, 40), actions.ClaimDaily, 11)
+	refs.Daily = tile(rewards, "Daily", "DAILY", "Egg", Color3.fromRGB(255, 160, 40), actions.ClaimDaily, 1)
+	refs.Daily.Size = UDim2.fromOffset(92, 78)
 	refs.DailyBadge = Theme.Badge(refs.Daily, "1")
 
 	-- Bottom center: speed + progress to the next gate.

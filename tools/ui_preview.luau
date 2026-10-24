@@ -15,6 +15,17 @@ local scene = process.args[3] or "hud"
 local outPath = process.args[4] or "build/ui-preview.html"
 local TOP_INSET = 36
 
+-- Icon asset id -> local PNG (assets/icons/<name>.png), so previews show the real icons.
+local ICON_FILES = {}
+do
+	local source = fs.readFile("src/shared/Config.luau")
+	local block = source:match("Config%.Icons = (%b{})") or ""
+	local files = { Coins = "coins", Gems = "gem", Upgrade = "upgrade" }
+	for key, id in block:gmatch('(%w+) = "(rbxassetid://%d+)"') do
+		ICON_FILES[id] = "../../assets/icons/" .. (files[key] or key:lower()) .. ".png"
+	end
+end
+
 local world = World.new()
 world.workspace.CurrentCamera.ViewportSize = roblox.Vector2.new(width, height)
 world:StartServer()
@@ -116,6 +127,9 @@ local function child(inst, class)
 end
 
 local function udim(u, parentLen, pixelScale)
+	if u == nil then
+		return 0
+	end
 	return u.Scale * parentLen + u.Offset * pixelScale
 end
 
@@ -305,6 +319,9 @@ render = function(inst, parentRect, parentPixelScale, depth, placed)
 		)
 		attrs = string.format(' data-max="%.1f" class="t"', maxSize)
 		text = "<span>" .. escape(inst.Text) .. "</span>"
+	end
+	if (inst.ClassName == "ImageLabel" or inst.ClassName == "ImageButton") and ICON_FILES[inst.Image] then
+		table.insert(styles, "background:url('" .. ICON_FILES[inst.Image] .. "') center/contain no-repeat")
 	end
 	if inst.ClassName == "ViewportFrame" then
 		table.insert(styles, "background:radial-gradient(circle,#ffffff22,#00000000);")
