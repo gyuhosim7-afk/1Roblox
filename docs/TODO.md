@@ -80,10 +80,15 @@
 - [x] 최종 빌드 `build/StealASlime.rbxl`, 출시 안내 docs/LAUNCH.md
 
 ## 다음 단계 (내 컴퓨터 + Studio 연결 세션에서)
-- [ ] 실제 Studio 플레이 테스트, 3D 모습·UI 디자인 다듬기, 아이콘 이미지 업로드
+- [x] 실제 Studio 플레이 테스트 (SelfTest 모두 통과)
+- [x] AI 아이콘 12개 업로드 (assets/icons, Config.Icons), AI 3D 모델 65개 (슬라임 43·알 8·둥지·경비·장식 12, ModelAssets)
+- [x] HUD 새 디자인 (큰 아이콘 버튼, 빨간 배지, 스피드 바, 폰 조이스틱 자리 비움), 창 디자인, 3D 슬라임 아이콘
+- [x] 조명·하늘 (지역마다 색이 바뀜), 광장(체크 바닥·동상·가로등·벤치·아치), 기지(스터드 바닥·받침대 빛)
+- [~] Studio 안에서 바뀐 모습 사진 찍기 (Studio 창이 최소화돼 있어 대기 중)
 - [ ] 게임패스/상품 ID를 Config에 넣고 출시 (docs/LAUNCH.md)
 
 ## 진행 기록
 - 2026-10-12: 조사, 기획, 작업 목록 작성.
 - 2026-10-12: 개발 환경 완성 (Rojo 빌드, Lune 테스트 하네스, selene, luau-lsp 타입검사). Config/Format/Formulas/Odds 작성 + 테스트 26개 통과.
+- 2026-10-24: Studio 연결 세션. 새 HUD·아이콘·AI 모델·조명·광장 완성, 검사 통과. rojo가 막힌 PC용 tools/sourcemap·build_place 추가.
 - 2026-10-23: 밸런스 확정(무료 공허 약 17시간, 유료 약 1.8배), 전체 시나리오 테스트, SelfTest, LAUNCH.md. 테스트 105개 통과.

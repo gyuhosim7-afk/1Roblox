@@ -39,7 +39,7 @@ PlotService.PlotReleased = Signal.new() -- (player, plot)
 local plots: { PlotState } = {}
 local byPlayer: { [Player]: PlotState } = {}
 
-local FLOOR_COLORS = { "#FFE0B2", "#C8E6C9", "#BBDEFB", "#F8BBD0", "#D1C4E9", "#FFF9C4", "#B2EBF2", "#FFCCBC" }
+local FLOOR_COLORS = { "#FFC46B", "#8EDB8E", "#7FC4FF", "#FF9EC7", "#B9A2FF", "#FFE45C", "#6EE0E8", "#FF9F80" }
 
 local function localCFrame(plotCFrame: CFrame, lx: number, ly: number, lz: number): CFrame
 	return plotCFrame * CFrame.new(lx, ly, lz)
