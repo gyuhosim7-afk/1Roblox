@@ -158,7 +158,10 @@ function HatchService.AddEgg(player: Player, eggId: string): number?
 		return nil
 	end
 	local now = os.time()
-	table.insert(session.Data.Eggs, { Slot = slot, Egg = eggId, HatchAt = now + def.HatchSeconds, Duration = def.HatchSeconds })
+	table.insert(
+		session.Data.Eggs,
+		{ Slot = slot, Egg = eggId, HatchAt = now + def.HatchSeconds, Duration = def.HatchSeconds }
+	)
 	HatchService.RefreshVisuals(player)
 	PlayerService.MarkDirty(player, true)
 	return slot

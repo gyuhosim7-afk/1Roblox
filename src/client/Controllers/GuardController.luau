@@ -128,7 +128,16 @@ function GuardController.Start()
 				if visual.Model then
 					local x, z = GuardMotion.PatrolPosition(guard, t)
 					local hop = math.abs(math.sin(t * 5 + guard.Phase)) * 1.2
-					visual.Model:PivotTo(CFrame.new(x, hop, z) * CFrame.Angles(0, if math.cos(t * math.pi * 2 / guard.Period + guard.Phase) > 0 then -math.pi / 2 else math.pi / 2, 0))
+					visual.Model:PivotTo(
+						CFrame.new(x, hop, z)
+							* CFrame.Angles(
+								0,
+								if math.cos(t * math.pi * 2 / guard.Period + guard.Phase) > 0
+									then -math.pi / 2
+									else math.pi / 2,
+								0
+							)
+					)
 				elseif visual.Arm then
 					local angle = GuardMotion.SweeperAngle(guard, t)
 					visual.Arm.CFrame = CFrame.new(guard.X, 2.2, guard.Z) * CFrame.Angles(0, -angle, 0)

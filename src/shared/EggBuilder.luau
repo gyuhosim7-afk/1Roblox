@@ -49,7 +49,11 @@ function EggBuilder.Build(eggId: string, scale: number?): Model
 				* CFrame.lookAt(Vector3.zero, Vector3.new(spot[1], spot[2] * 1.2, spot[3]))
 				* CFrame.new(0, 0, -1.1 * s),
 			Color = spotColor,
-			Material = if eggId == "Royal" or eggId == "Void" or eggId == "Crystal" then Enum.Material.Neon else Enum.Material.SmoothPlastic,
+			Material = if eggId == "Royal"
+					or eggId == "Void"
+					or eggId == "Crystal"
+				then Enum.Material.Neon
+				else Enum.Material.SmoothPlastic,
 			CanCollide = false,
 			CastShadow = false,
 			Parent = model,

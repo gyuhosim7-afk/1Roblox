@@ -181,7 +181,10 @@ function UIController.Start()
 				local player = Players.LocalPlayer
 				local carrying = player:GetAttribute("CarryingEgg")
 				if type(carrying) == "string" and Config.Eggs[carrying] then
-					Hud.SetBanner("🥚 Carrying " .. Config.Eggs[carrying].Name .. " - run back to your base!", Theme.Colors.Accent)
+					Hud.SetBanner(
+						"🥚 Carrying " .. Config.Eggs[carrying].Name .. " - run back to your base!",
+						Theme.Colors.Accent
+					)
 				else
 					local tip = tutorialText(state)
 					Hud.SetBanner(tip, Theme.Colors.Blue)

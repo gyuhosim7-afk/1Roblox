@@ -254,14 +254,19 @@ return function(t)
 			result = s.Network.Invoke(player, "SkipHatch", 1)
 			expect(result.ok).toBe(true)
 			expect(#session.Data.Slimes).toBe(1)
-			expect(session.Data.Gems).toBe(100 - 12 + s.Config.Rarities[s.Config.Slimes[session.Data.Slimes[1].Kind].Rarity].DiscoveryGems)
+			expect(session.Data.Gems).toBe(
+				100 - 12 + s.Config.Rarities[s.Config.Slimes[session.Data.Slimes[1].Kind].Rarity].DiscoveryGems
+			)
 		end)
 
 		it("pauses hatching when slime storage is full", function()
 			local s = setup()
 			local player, session = s.join(1)
 			for i = 1, s.Config.Base.MaxSlimes do
-				table.insert(session.Data.Slimes, { Id = "S" .. (1000 + i), Kind = "BlueSlime", Mutation = "None", Locked = false })
+				table.insert(
+					session.Data.Slimes,
+					{ Id = "S" .. (1000 + i), Kind = "BlueSlime", Mutation = "None", Locked = false }
+				)
 			end
 			s.HatchService.AddEgg(player, "Meadow")
 			s.world:Advance(15)
@@ -278,7 +283,10 @@ return function(t)
 			local player, session = s.join(1)
 			local SlimeInventory = s.world:Require("ServerScriptService/Server/Logic/SlimeInventory")
 			for i = 1, 8 do
-				table.insert(session.Data.Slimes, { Id = "S" .. i, Kind = "BlueSlime", Mutation = "None", Locked = false })
+				table.insert(
+					session.Data.Slimes,
+					{ Id = "S" .. i, Kind = "BlueSlime", Mutation = "None", Locked = false }
+				)
 			end
 			table.insert(session.Data.Slimes, { Id = "S9", Kind = "SunnySlime", Mutation = "None", Locked = false })
 			session.Data.Slimes[1].Locked = true

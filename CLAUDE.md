@@ -22,7 +22,8 @@ Roblox game built with Rojo + Luau. Owner does not code: talk to them in short, 
   must never overwrite saved data.
 - Every screen and control must work on mobile (scale-based UI, big buttons, no keyboard-only actions).
 - All numbers (prices, odds, rewards) live in `src/shared/Config.luau`.
-- Never use Toolbox models made by others. Build everything in code.
+- Never use Toolbox models made by others. AI-generated assets made for this game (icons, meshes,
+  textures) are allowed and preferred when they look better; everything else is built in code.
 - Commit to Git after each finished feature. Keep `docs/TODO.md` progress up to date.
 
 ## Layout

@@ -549,7 +549,8 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 	for _ = 1, count do
 		for _, side in { -1, 1 } do
 			local x = side * rng:NextNumber(halfRoad + 8, halfRoad + sideWidth - 6)
-			local z = rng:NextNumber(layout.StartZ - Config.Map.GateGap / 2 + 4, layout.EndZ + Config.Map.GateGap / 2 - 4)
+			local z =
+				rng:NextNumber(layout.StartZ - Config.Map.GateGap / 2 + 4, layout.EndZ + Config.Map.GateGap / 2 - 4)
 			builder(decor, v3(x, GROUND_Y, z), rng)
 		end
 	end

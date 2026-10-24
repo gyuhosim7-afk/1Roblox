@@ -140,7 +140,13 @@ Config.Slimes = {
 	},
 	-- Forest
 	LeafSlime = { Name = "Leaf Slime", Rarity = "Common", Income = 12, Color = "#6BBF59", Accessory = { "Leaf" } },
-	MushroomSlime = { Name = "Mushroom Slime", Rarity = "Common", Income = 18, Color = "#F1E3C8", Accessory = { "Cap" } },
+	MushroomSlime = {
+		Name = "Mushroom Slime",
+		Rarity = "Common",
+		Income = 18,
+		Color = "#F1E3C8",
+		Accessory = { "Cap" },
+	},
 	MossSlime = { Name = "Moss Slime", Rarity = "Uncommon", Income = 35, Color = "#4E7D3A", Accessory = { "Spikes" } },
 	OwlSlime = { Name = "Owl Slime", Rarity = "Rare", Income = 90, Color = "#8B6B4A", Accessory = { "Ears" } },
 	FairySlime = {
@@ -162,8 +168,20 @@ Config.Slimes = {
 	},
 	-- Desert
 	SandSlime = { Name = "Sand Slime", Rarity = "Common", Income = 80, Color = "#E6C48A" },
-	CactusSlime = { Name = "Cactus Slime", Rarity = "Common", Income = 120, Color = "#3FA34D", Accessory = { "Spikes" } },
-	ScarabSlime = { Name = "Scarab Slime", Rarity = "Uncommon", Income = 250, Color = "#1F7A8C", Accessory = { "Antenna" } },
+	CactusSlime = {
+		Name = "Cactus Slime",
+		Rarity = "Common",
+		Income = 120,
+		Color = "#3FA34D",
+		Accessory = { "Spikes" },
+	},
+	ScarabSlime = {
+		Name = "Scarab Slime",
+		Rarity = "Uncommon",
+		Income = 250,
+		Color = "#1F7A8C",
+		Accessory = { "Antenna" },
+	},
 	MummySlime = { Name = "Mummy Slime", Rarity = "Rare", Income = 650, Color = "#EDE6D6", Accessory = { "Bandage" } },
 	PharaohSlime = {
 		Name = "Pharaoh Slime",
@@ -184,7 +202,13 @@ Config.Slimes = {
 	},
 	-- Snow
 	SnowballSlime = { Name = "Snowball Slime", Rarity = "Common", Income = 600, Color = "#F2F7FF" },
-	PenguinSlime = { Name = "Penguin Slime", Rarity = "Common", Income = 900, Color = "#2C3E50", Accessory = { "Belly" } },
+	PenguinSlime = {
+		Name = "Penguin Slime",
+		Rarity = "Common",
+		Income = 900,
+		Color = "#2C3E50",
+		Accessory = { "Belly" },
+	},
 	YetiSlime = { Name = "Yeti Slime", Rarity = "Uncommon", Income = 1900, Color = "#DDE8F0", Accessory = { "Horns" } },
 	IceCrystalSlime = {
 		Name = "Ice Crystal Slime",
@@ -214,7 +238,13 @@ Config.Slimes = {
 	-- Volcano
 	EmberSlime = { Name = "Ember Slime", Rarity = "Common", Income = 4500, Color = "#FF7043" },
 	LavaSlime = { Name = "Lava Slime", Rarity = "Common", Income = 7000, Color = "#FF3D00", Material = "Neon" },
-	ObsidianSlime = { Name = "Obsidian Slime", Rarity = "Uncommon", Income = 15000, Color = "#2B2133", Accessory = { "Spikes" } },
+	ObsidianSlime = {
+		Name = "Obsidian Slime",
+		Rarity = "Uncommon",
+		Income = 15000,
+		Color = "#2B2133",
+		Accessory = { "Spikes" },
+	},
 	PhoenixSlime = {
 		Name = "Phoenix Slime",
 		Rarity = "Rare",
@@ -243,7 +273,13 @@ Config.Slimes = {
 	-- Crystal Cave
 	QuartzSlime = { Name = "Quartz Slime", Rarity = "Common", Income = 35000, Color = "#F8F8FF", Material = "Glass" },
 	AmethystSlime = { Name = "Amethyst Slime", Rarity = "Common", Income = 55000, Color = "#9B59B6" },
-	GeodeSlime = { Name = "Geode Slime", Rarity = "Uncommon", Income = 120000, Color = "#7E57C2", Accessory = { "Spikes" } },
+	GeodeSlime = {
+		Name = "Geode Slime",
+		Rarity = "Uncommon",
+		Income = 120000,
+		Color = "#7E57C2",
+		Accessory = { "Spikes" },
+	},
 	PrismSlime = { Name = "Prism Slime", Rarity = "Rare", Income = 320000, Color = "#80DEEA", Accessory = { "Star" } },
 	DiamondSlime = {
 		Name = "Diamond Slime",
@@ -276,8 +312,20 @@ Config.Slimes = {
 	-- Void
 	ShadowSlime = { Name = "Shadow Slime", Rarity = "Common", Income = 300000, Color = "#263238" },
 	NebulaSlime = { Name = "Nebula Slime", Rarity = "Common", Income = 480000, Color = "#5E35B1" },
-	CometSlime = { Name = "Comet Slime", Rarity = "Uncommon", Income = 1000000, Color = "#4FC3F7", Accessory = { "Antenna" } },
-	BlackHoleSlime = { Name = "Black Hole Slime", Rarity = "Rare", Income = 2800000, Color = "#0D0D0D", Accessory = { "Ring" } },
+	CometSlime = {
+		Name = "Comet Slime",
+		Rarity = "Uncommon",
+		Income = 1000000,
+		Color = "#4FC3F7",
+		Accessory = { "Antenna" },
+	},
+	BlackHoleSlime = {
+		Name = "Black Hole Slime",
+		Rarity = "Rare",
+		Income = 2800000,
+		Color = "#0D0D0D",
+		Accessory = { "Ring" },
+	},
 	GalaxySlime = {
 		Name = "Galaxy Slime",
 		Rarity = "Epic",

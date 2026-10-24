@@ -96,13 +96,9 @@ function UpgradeService.Rebirth(player: Player): (boolean, string?)
 	Network.NotifyAll(player.DisplayName .. " just rebirthed! (Rebirth " .. data.Rebirths .. ")", "rare")
 	Network.Effect(player, "Rebirth", { Rebirths = data.Rebirths })
 	return true,
-		"Rebirth "
-			.. data.Rebirths
-			.. "! Speed gain +"
-			.. math.floor(Config.Rebirth.SpeedBonusPerRebirth * 100 * data.Rebirths)
-			.. "%, coins +"
-			.. math.floor(Config.Rebirth.CoinBonusPerRebirth * 100 * data.Rebirths)
-			.. "%"
+		"Rebirth " .. data.Rebirths .. "! Speed gain +" .. math.floor(
+			Config.Rebirth.SpeedBonusPerRebirth * 100 * data.Rebirths
+		) .. "%, coins +" .. math.floor(Config.Rebirth.CoinBonusPerRebirth * 100 * data.Rebirths) .. "%"
 end
 
 function UpgradeService.Init()

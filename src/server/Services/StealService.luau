@@ -66,7 +66,11 @@ function StealService.TrySteal(thief: Player, plot: PlotService.PlotState, slot:
 	end
 	HatchService.Reserve(victim, slot, thief)
 	EggService.StartCarry(thief, egg.Egg, { Kind = "Incubator", Victim = victim, Slot = slot })
-	Network.Notify(victim, thief.DisplayName .. " is stealing your " .. Config.Eggs[egg.Egg].Name .. "! BONK them!", "error")
+	Network.Notify(
+		victim,
+		thief.DisplayName .. " is stealing your " .. Config.Eggs[egg.Egg].Name .. "! BONK them!",
+		"error"
+	)
 	Network.Effect(victim, "Alarm", { Thief = thief.UserId })
 	return true, nil
 end
@@ -125,7 +129,11 @@ function StealService.Bonk(attacker: Player): (boolean, string?)
 	for _, session in PlayerService.All() do
 		local target = session.Player
 		local targetRoot = rootOf(target)
-		if target ~= attacker and targetRoot and (targetRoot.Position - root.Position).Magnitude <= Config.Steal.BonkRange then
+		if
+			target ~= attacker
+			and targetRoot
+			and (targetRoot.Position - root.Position).Magnitude <= Config.Steal.BonkRange
+		then
 			if canBonk(target, attackerPlot) then
 				local away = targetRoot.Position - root.Position
 				local flat = Vector3.new(away.X, 0, away.Z)
@@ -159,7 +167,10 @@ function StealService.Tick()
 			local ownerRoot = rootOf(owner)
 			if ownerRoot and not PlotService.IsLocked(plot) then
 				local lx, lz = MapLayout.WorldToPlot(plot.Layout, ownerRoot.Position.X, ownerRoot.Position.Z)
-				if math.abs(lx - padInfo.X) <= padInfo.Size / 2 + 1 and math.abs(lz - padInfo.Z) <= padInfo.Size / 2 + 1 then
+				if
+					math.abs(lx - padInfo.X) <= padInfo.Size / 2 + 1
+					and math.abs(lz - padInfo.Z) <= padInfo.Size / 2 + 1
+				then
 					local ok, message = StealService.Lock(owner)
 					if ok and message then
 						Network.Notify(owner, message, "success")

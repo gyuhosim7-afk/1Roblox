@@ -66,7 +66,10 @@ function Scheduler:RunDue()
 		end
 		local bestIndex, best = nil, nil
 		for index, entry in self.queue do
-			if entry.at <= self.now + 1e-9 and (best == nil or entry.at < best.at or (entry.at == best.at and entry.seq < best.seq)) then
+			if
+				entry.at <= self.now + 1e-9
+				and (best == nil or entry.at < best.at or (entry.at == best.at and entry.seq < best.seq))
+			then
 				bestIndex, best = index, entry
 			end
 		end

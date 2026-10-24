@@ -34,7 +34,8 @@ local function pill(parent: Instance, name: string, icon: string, color: Color3,
 	local iconLabel = Theme.Text(frame, icon, { MaxSize = 30 })
 	iconLabel.Size = UDim2.fromOffset(44, 44)
 	iconLabel.Position = UDim2.fromOffset(6, 4)
-	local value = Theme.Text(frame, "0", { Name = "Value", MaxSize = 30, Color = color, Align = Enum.TextXAlignment.Left })
+	local value =
+		Theme.Text(frame, "0", { Name = "Value", MaxSize = 30, Color = color, Align = Enum.TextXAlignment.Left })
 	value.Size = UDim2.new(1, -60, 1, -8)
 	value.Position = UDim2.fromOffset(52, 4)
 	return frame, value
@@ -62,8 +63,11 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	Theme.List(top, 10, true)
 	local speedPill, speedValue = pill(top, "Speed", "⚡", Theme.Colors.Gold, 250, 1)
 	speedValue.Size = UDim2.new(1, -60, 0.62, -2)
-	local perSecond =
-		Theme.Text(speedPill, "+1/s", { Name = "PerSecond", MaxSize = 18, Color = Theme.Colors.SubText, Align = Enum.TextXAlignment.Left })
+	local perSecond = Theme.Text(
+		speedPill,
+		"+1/s",
+		{ Name = "PerSecond", MaxSize = 18, Color = Theme.Colors.SubText, Align = Enum.TextXAlignment.Left }
+	)
 	perSecond.Size = UDim2.new(1, -60, 0.38, -2)
 	perSecond.Position = UDim2.new(0, 52, 0.62, 0)
 	local _, coinValue = pill(top, "Coins", "💰", Theme.Colors.Green, 200, 2)

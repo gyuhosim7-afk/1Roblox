@@ -70,9 +70,13 @@ return function(t)
 			local state = newState()
 			local deps = makeDeps(state)
 			state.missing = true
-			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 1, PurchaseId = "a" }, deps)).toBe("NotProcessedYet")
+			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 1, PurchaseId = "a" }, deps)).toBe(
+				"NotProcessedYet"
+			)
 			state.missing = false
-			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 999, PurchaseId = "b" }, deps)).toBe("NotProcessedYet")
+			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 999, PurchaseId = "b" }, deps)).toBe(
+				"NotProcessedYet"
+			)
 			expect(state.grants).toBe(0)
 		end)
 
@@ -80,7 +84,9 @@ return function(t)
 			local state = newState()
 			local deps = makeDeps(state)
 			state.grantError = true
-			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 1, PurchaseId = "c" }, deps)).toBe("NotProcessedYet")
+			expect(ReceiptLogic.Process({ PlayerId = 1, ProductId = 1, PurchaseId = "c" }, deps)).toBe(
+				"NotProcessedYet"
+			)
 			expect(state.profile.Data.Purchases.c).toBeNil()
 		end)
 	end)
@@ -204,7 +210,9 @@ return function(t)
 
 	describe("Paid random item policy", function()
 		it("blocks Royal Egg and luck items for restricted players", function()
-			local s = setup({ policies = { [5] = { ArePaidRandomItemsRestricted = true, IsPaidItemTradingAllowed = false } } })
+			local s = setup({
+				policies = { [5] = { ArePaidRandomItemsRestricted = true, IsPaidItemTradingAllowed = false } },
+			})
 			local player, session = s.join(5)
 			s.world:Advance(1)
 			expect(s.Monetization.IsRestricted(player)).toBe(true)
@@ -240,7 +248,11 @@ return function(t)
 			session.Data.Gems = 200
 			expect(s.Network.Invoke(player, "BuyWithGems", "RoyalEgg").ok).toBe(true)
 			expect(#session.Data.Slimes).toBe(1)
-			expect(session.Data.Gems).toBe(200 - s.Config.GemShop.RoyalEgg + s.Config.Rarities[s.Config.Slimes[session.Data.Slimes[1].Kind].Rarity].DiscoveryGems)
+			expect(session.Data.Gems).toBe(
+				200
+					- s.Config.GemShop.RoyalEgg
+					+ s.Config.Rarities[s.Config.Slimes[session.Data.Slimes[1].Kind].Rarity].DiscoveryGems
+			)
 		end)
 	end)
 

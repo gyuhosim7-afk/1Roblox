@@ -42,7 +42,11 @@ local ACCESSORIES: { [string]: (Ctx) -> () } = {
 		end
 	end,
 	Flower = function(ctx)
-		add(ctx, { Name = "FlowerCenter", Shape = Enum.PartType.Ball, Size = sz(ctx, 0.5, 0.5, 0.5), Color = "#FFC107" }, v(ctx, 0, 1.35, 0))
+		add(
+			ctx,
+			{ Name = "FlowerCenter", Shape = Enum.PartType.Ball, Size = sz(ctx, 0.5, 0.5, 0.5), Color = "#FFC107" },
+			v(ctx, 0, 1.35, 0)
+		)
 		for i = 1, 5 do
 			local a = i / 5 * math.pi * 2
 			add(ctx, {
@@ -75,11 +79,17 @@ local ACCESSORIES: { [string]: (Ctx) -> () } = {
 	end,
 	Spikes = function(ctx)
 		for i = -2, 2 do
-			add(ctx, {
-				Name = "Spike",
-				Size = sz(ctx, 0.35, 0.8, 0.35),
-				Color = Build.Shade(ctx.color, -0.3),
-			}, v(ctx, 0, 1.15 - math.abs(i) * 0.12, i * 0.45) * CFrame.Angles(i * 0.25, 0, 0) * CFrame.Angles(0, math.pi / 4, 0))
+			add(
+				ctx,
+				{
+					Name = "Spike",
+					Size = sz(ctx, 0.35, 0.8, 0.35),
+					Color = Build.Shade(ctx.color, -0.3),
+				},
+				v(ctx, 0, 1.15 - math.abs(i) * 0.12, i * 0.45)
+					* CFrame.Angles(i * 0.25, 0, 0)
+					* CFrame.Angles(0, math.pi / 4, 0)
+			)
 		end
 	end,
 	Horns = function(ctx)
@@ -248,7 +258,11 @@ function SlimeBuilder.Build(kind: string, mutation: string?, extraScale: number?
 
 	-- Face
 	for _, side in { -1, 1 } do
-		add(ctx, { Name = "Eye", Shape = Enum.PartType.Ball, Size = sz(ctx, 0.55, 0.55, 0.55), Color = "#1B1B1B" }, v(ctx, side * 0.55, 0.25, -1.25))
+		add(
+			ctx,
+			{ Name = "Eye", Shape = Enum.PartType.Ball, Size = sz(ctx, 0.55, 0.55, 0.55), Color = "#1B1B1B" },
+			v(ctx, side * 0.55, 0.25, -1.25)
+		)
 		add(ctx, {
 			Name = "Shine",
 			Shape = Enum.PartType.Ball,

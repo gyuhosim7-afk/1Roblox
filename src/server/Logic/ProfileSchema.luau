@@ -96,7 +96,12 @@ end
 
 -- Fills missing fields, repairs bad values and migrates old versions.
 -- `knownSlimes` / `knownEggs` let us drop entries that no longer exist in Config.
-function ProfileSchema.Reconcile(raw: any, now: number, knownSlimes: { [string]: any }?, knownEggs: { [string]: any }?): Data
+function ProfileSchema.Reconcile(
+	raw: any,
+	now: number,
+	knownSlimes: { [string]: any }?,
+	knownEggs: { [string]: any }?
+): Data
 	local default = ProfileSchema.Default(now)
 	if type(raw) ~= "table" then
 		return default

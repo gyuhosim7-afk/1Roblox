@@ -202,8 +202,16 @@ local function deliver(player: Player, carry: Carry)
 		if victimSession then
 			victimSession.Data.Stats.TimesRobbed += 1
 		end
-		Network.Notify(player, "You stole " .. victim.DisplayName .. "'s " .. Config.Eggs[removed.Egg].Name .. "!", "success")
-		Network.Notify(victim, player.DisplayName .. " stole your " .. Config.Eggs[removed.Egg].Name .. "! Lock your base!", "error")
+		Network.Notify(
+			player,
+			"You stole " .. victim.DisplayName .. "'s " .. Config.Eggs[removed.Egg].Name .. "!",
+			"success"
+		)
+		Network.Notify(
+			victim,
+			player.DisplayName .. " stole your " .. Config.Eggs[removed.Egg].Name .. "! Lock your base!",
+			"error"
+		)
 		EggService.Delivered:Fire(player, removed.Egg, origin)
 		return
 	end

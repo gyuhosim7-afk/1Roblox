@@ -147,7 +147,11 @@ function MonetizationService.GrantProduct(player: Player, key: string): boolean
 	if isRandomRelated(def) and MonetizationService.IsRestricted(player) then
 		local gems = def.FallbackGems or 100
 		session.Data.Gems += gems
-		Network.Notify(player, def.Name .. " is not available in your region. You received " .. gems .. " Gems instead.", "info")
+		Network.Notify(
+			player,
+			def.Name .. " is not available in your region. You received " .. gems .. " Gems instead.",
+			"info"
+		)
 		PlayerService.MarkDirty(player, true)
 		return true
 	end
@@ -324,12 +328,14 @@ end
 
 function MonetizationService.Start()
 	MarketplaceService.ProcessReceipt = MonetizationService.ProcessReceipt
-	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player: Player, passId: number, purchased: boolean)
-		local key = passKeyById[passId]
-		if purchased and key then
-			onPassPurchased(player, key)
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(
+		function(player: Player, passId: number, purchased: boolean)
+			local key = passKeyById[passId]
+			if purchased and key then
+				onPassPurchased(player, key)
+			end
 		end
-	end)
+	)
 	PlayerService.PlayerReady:Connect(function(player: Player, session: PlayerService.Session)
 		task.spawn(loadPolicy, player, session)
 		task.spawn(checkPasses, player)

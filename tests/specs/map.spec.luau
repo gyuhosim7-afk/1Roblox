@@ -97,7 +97,9 @@ return function(t)
 			for _, p in MapLayout.PlotLocal.Incubators do
 				expect(math.abs(p.X) < half - 2 and math.abs(p.Z) < half - 2).toBe(true)
 			end
-			expect(#MapLayout.PlotLocal.Pedestals).toBe(Config.Upgrades.Pedestals.Start + Config.Upgrades.Pedestals.MaxLevel)
+			expect(#MapLayout.PlotLocal.Pedestals).toBe(
+				Config.Upgrades.Pedestals.Start + Config.Upgrades.Pedestals.MaxLevel
+			)
 			expect(#MapLayout.PlotLocal.Incubators).toBe(
 				Config.Upgrades.Incubators.Start + Config.Upgrades.Incubators.MaxLevel + Config.ExtraIncubatorsFromPass
 			)

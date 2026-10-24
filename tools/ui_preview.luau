@@ -31,8 +31,14 @@ session.Data.Speed = 2345
 session.Data.TrainingLevel = 12
 session.Data.BestZone = 4
 session.Data.Stats.Joins = 3
-for _, kind in { "SunnySlime", "FairySlime", "LeafSlime", "BlueSlime", "PinkSlime", "SandSlime", "OwlSlime", "TreantSlime" } do
-	SlimeService.AddSlime(player, kind, if kind == "OwlSlime" then "Gold" elseif kind == "BlueSlime" then "Rainbow" else "None")
+for _, kind in
+	{ "SunnySlime", "FairySlime", "LeafSlime", "BlueSlime", "PinkSlime", "SandSlime", "OwlSlime", "TreantSlime" }
+do
+	SlimeService.AddSlime(
+		player,
+		kind,
+		if kind == "OwlSlime" then "Gold" elseif kind == "BlueSlime" then "Rainbow" else "None"
+	)
 end
 HatchService.AddEgg(player, "Forest")
 BoostService.AddPotion(player, "Luck", 600)
@@ -73,18 +79,36 @@ local function css(c, transparency)
 	if not c then
 		return "transparent"
 	end
-	return string.format("rgba(%d,%d,%d,%.3f)", math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5), 1 - (transparency or 0))
+	return string.format(
+		"rgba(%d,%d,%d,%.3f)",
+		math.floor(c.R * 255 + 0.5),
+		math.floor(c.G * 255 + 0.5),
+		math.floor(c.B * 255 + 0.5),
+		1 - (transparency or 0)
+	)
 end
 
 local function escape(text)
 	text = tostring(text or "")
-	text = text:gsub("&", "&amp;"):gsub("<font[^>]*>", ""):gsub("</font>", ""):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\n", "<br>")
+	text = text:gsub("&", "&amp;")
+		:gsub("<font[^>]*>", "")
+		:gsub("</font>", "")
+		:gsub("<", "&lt;")
+		:gsub(">", "&gt;")
+		:gsub("\n", "<br>")
 	return text
 end
 
 local function isGui(inst)
 	local c = inst.ClassName
-	return c == "Frame" or c == "TextLabel" or c == "TextButton" or c == "ScrollingFrame" or c == "ImageLabel" or c == "ImageButton" or c == "ViewportFrame" or c == "TextBox"
+	return c == "Frame"
+		or c == "TextLabel"
+		or c == "TextButton"
+		or c == "ScrollingFrame"
+		or c == "ImageLabel"
+		or c == "ImageButton"
+		or c == "ViewportFrame"
+		or c == "TextBox"
 end
 
 local function child(inst, class)
@@ -115,7 +139,12 @@ local function layoutChildren(inst, rect, pixelScale, depth)
 	if padding then
 		local l = udim(padding.PaddingLeft, rect.w, pixelScale)
 		local t = udim(padding.PaddingTop, rect.h, pixelScale)
-		inner = { x = rect.x + l, y = rect.y + t, w = rect.w - l - udim(padding.PaddingRight, rect.w, pixelScale), h = rect.h - t - udim(padding.PaddingBottom, rect.h, pixelScale) }
+		inner = {
+			x = rect.x + l,
+			y = rect.y + t,
+			w = rect.w - l - udim(padding.PaddingRight, rect.w, pixelScale),
+			h = rect.h - t - udim(padding.PaddingBottom, rect.h, pixelScale),
+		}
 	end
 	if list or grid then
 		table.sort(kids, function(a, b)
@@ -141,7 +170,13 @@ local function layoutChildren(inst, rect, pixelScale, depth)
 		for i, c in kids do
 			local col = (i - 1) % perRow
 			local row = (i - 1) // perRow
-			render(c, { x = inner.x + col * (cw + px), y = inner.y + row * (ch + py), w = cw, h = ch }, pixelScale, depth + 1, true)
+			render(
+				c,
+				{ x = inner.x + col * (cw + px), y = inner.y + row * (ch + py), w = cw, h = ch },
+				pixelScale,
+				depth + 1,
+				true
+			)
 		end
 		return
 	end
@@ -237,7 +272,14 @@ render = function(inst, parentRect, parentPixelScale, depth, placed)
 	end
 	local stroke = child(inst, "UIStroke")
 	if stroke and inst.ClassName ~= "TextLabel" then
-		table.insert(styles, string.format("box-shadow:0 0 0 %.1fpx %s", stroke.Thickness * pixelScale, css(stroke.Color, stroke.Transparency)))
+		table.insert(
+			styles,
+			string.format(
+				"box-shadow:0 0 0 %.1fpx %s",
+				stroke.Thickness * pixelScale,
+				css(stroke.Color, stroke.Transparency)
+			)
+		)
 	end
 	if inst.ClassName == "ScrollingFrame" then
 		table.insert(styles, "overflow:hidden")
@@ -254,20 +296,34 @@ render = function(inst, parentRect, parentPixelScale, depth, placed)
 			align = "right"
 		end
 		table.insert(styles, "color:" .. css(inst.TextColor3, inst.TextTransparency))
-		table.insert(styles, "text-align:" .. align .. ";justify-content:" .. (if align == "left" then "flex-start" elseif align == "right" then "flex-end" else "center"))
-		attrs = string.format(" data-max=\"%.1f\" class=\"t\"", maxSize)
+		table.insert(
+			styles,
+			"text-align:"
+				.. align
+				.. ";justify-content:"
+				.. (if align == "left" then "flex-start" elseif align == "right" then "flex-end" else "center")
+		)
+		attrs = string.format(' data-max="%.1f" class="t"', maxSize)
 		text = "<span>" .. escape(inst.Text) .. "</span>"
 	end
 	if inst.ClassName == "ViewportFrame" then
 		table.insert(styles, "background:radial-gradient(circle,#ffffff22,#00000000);")
 		text = "<span style='color:#aaa'>[3D slime]</span>"
-		attrs = " class=\"t\" data-max=\"16\""
+		attrs = ' class="t" data-max="16"'
 	end
-	emit(string.format("<div%s style=\"%s\" title=\"%s\">%s", attrs, table.concat(styles, ";"), inst.Name, text))
+	emit(string.format('<div%s style="%s" title="%s">%s', attrs, table.concat(styles, ";"), inst.Name, text))
 	if inst.ClassName == "ScrollingFrame" then
 		emit("</div>")
 		-- children positioned in page space but clipped: render inside a clip box
-		emit(string.format("<div style=\"left:%.1fpx;top:%.1fpx;width:%.1fpx;height:%.1fpx;overflow:hidden\">", rect.x, rect.y, rect.w, rect.h))
+		emit(
+			string.format(
+				'<div style="left:%.1fpx;top:%.1fpx;width:%.1fpx;height:%.1fpx;overflow:hidden">',
+				rect.x,
+				rect.y,
+				rect.w,
+				rect.h
+			)
+		)
 		layoutChildren(inst, { x = 0, y = 0, w = rect.w - 8 * pixelScale, h = 100000 }, pixelScale, depth)
 		emit("</div>")
 		return
@@ -291,8 +347,24 @@ layoutChildren(gui, root, 1, 0)
 
 -- Mobile touch controls (thumbstick + jump) to spot overlaps
 if width <= 1000 then
-	emit(string.format("<div class='touch' style='left:%dpx;top:%dpx;width:%dpx;height:%dpx;z-index:999'></div>", 30, height - 170, 140, 140))
-	emit(string.format("<div class='touch' style='left:%dpx;top:%dpx;width:%dpx;height:%dpx;z-index:999'></div>", width - 120, height - 120, 90, 90))
+	emit(
+		string.format(
+			"<div class='touch' style='left:%dpx;top:%dpx;width:%dpx;height:%dpx;z-index:999'></div>",
+			30,
+			height - 170,
+			140,
+			140
+		)
+	)
+	emit(
+		string.format(
+			"<div class='touch' style='left:%dpx;top:%dpx;width:%dpx;height:%dpx;z-index:999'></div>",
+			width - 120,
+			height - 120,
+			90,
+			90
+		)
+	)
 end
 
 emit([[<script>

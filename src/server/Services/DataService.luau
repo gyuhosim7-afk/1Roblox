@@ -188,7 +188,11 @@ function DataService.LoadAsync(player: Player): Profile?
 			task.spawn(function()
 				pcall(function()
 					store:UpdateAsync(key, function(stored: any): any
-						if type(stored) == "table" and type(stored.Session) == "table" and stored.Session.JobId == game.JobId then
+						if
+							type(stored) == "table"
+							and type(stored.Session) == "table"
+							and stored.Session.JobId == game.JobId
+						then
 							stored.Session = nil
 							return stored
 						end

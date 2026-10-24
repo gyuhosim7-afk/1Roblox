@@ -84,7 +84,10 @@ local function showNextHatch()
 	local name = Theme.Text(frame, mutationName .. def.Name, { MaxSize = 30, Color = rarityColor })
 	name.Size = UDim2.new(1, -20, 0, 40)
 	name.Position = UDim2.fromOffset(10, 284)
-	local detail = def.Rarity .. "  -  $" .. Format.Number(def.Income * (Config.Mutations :: any)[info.Mutation or "None"].Multiplier) .. "/s"
+	local detail = def.Rarity
+		.. "  -  $"
+		.. Format.Number(def.Income * (Config.Mutations :: any)[info.Mutation or "None"].Multiplier)
+		.. "/s"
 	if info.Gems and info.Gems > 0 then
 		detail ..= "   +" .. info.Gems .. " 💎"
 	end
@@ -185,7 +188,8 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 	Theme.AutoScale(frame)
 	local zone = Config.Zones[math.clamp(state.Data.BestZone, 1, #Config.Zones)]
 	local luck = state.Luck or 1
-	local title = Theme.Text(frame, "👑 Royal Egg - " .. zone.Name .. " slimes", { MaxSize = 28, Color = Theme.Colors.Gold })
+	local title =
+		Theme.Text(frame, "👑 Royal Egg - " .. zone.Name .. " slimes", { MaxSize = 28, Color = Theme.Colors.Gold })
 	title.Size = UDim2.new(1, -70, 0, 44)
 	title.Position = UDim2.fromOffset(10, 8)
 	Theme.Button(frame, "X", Theme.Colors.Red, function()
@@ -258,10 +262,11 @@ function Popups.NestOdds(eggId: string?, state: any?)
 	})
 	frame.BackgroundTransparency = 0.15
 	nestPanel = frame
-	local title = Theme.Text(frame, egg.Name .. " odds" .. (if luck > 1 then "  (Luck x" .. Format.Number(luck) .. ")" else ""), {
-		MaxSize = 18,
-		Color = Theme.Hex(egg.SpotColor),
-	})
+	local title =
+		Theme.Text(frame, egg.Name .. " odds" .. (if luck > 1 then "  (Luck x" .. Format.Number(luck) .. ")" else ""), {
+			MaxSize = 18,
+			Color = Theme.Hex(egg.SpotColor),
+		})
 	title.Size = UDim2.new(1, -16, 0, 26)
 	title.Position = UDim2.fromOffset(8, 4)
 	local grid = Instance.new("Frame")
@@ -280,7 +285,12 @@ function Popups.NestOdds(eggId: string?, state: any?)
 		local cell = Theme.Text(
 			grid,
 			(if known then def.Name else "???") .. " (" .. def.Rarity .. "): " .. Format.Percent(entry.Chance),
-			{ MaxSize = 16, Color = Theme.Hex(Config.Rarities[def.Rarity].Color), Align = Enum.TextXAlignment.Left, LayoutOrder = index }
+			{
+				MaxSize = 16,
+				Color = Theme.Hex(Config.Rarities[def.Rarity].Color),
+				Align = Enum.TextXAlignment.Left,
+				LayoutOrder = index,
+			}
 		)
 		cell.Size = UDim2.fromOffset(290, 24)
 	end

@@ -46,7 +46,8 @@ local function makeLabel(model: Model, kind: string, mutation: string)
 	end
 	local mutationName = if mutation ~= "None" then (Config.Mutations :: any)[mutation].Name .. " " else ""
 	local text = mutationName .. def.Name .. "\n$" .. Format.Number(Formulas.SlimeIncome(kind, mutation)) .. "/s"
-	local gui = Build.Billboard(body, text, UDim2.fromScale(6, 1.8), Vector3.new(0, 2.6 * SlimeBuilder.Scale(kind), 0), 45)
+	local gui =
+		Build.Billboard(body, text, UDim2.fromScale(6, 1.8), Vector3.new(0, 2.6 * SlimeBuilder.Scale(kind), 0), 45)
 	local label = gui:FindFirstChild("Label") :: TextLabel
 	label.TextColor3 = Build.Hex(Config.Rarities[def.Rarity].Color)
 end

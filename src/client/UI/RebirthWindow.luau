@@ -19,7 +19,14 @@ local function progressBar(parent: Instance, order: number): (Frame, TextLabel)
 		LayoutOrder = order,
 		Parent = parent,
 	})
-	local fill = Theme.Frame({ Name = "Fill", Size = UDim2.fromScale(0, 1), Color = Theme.Colors.Green, Radius = 20, Stroke = false, Parent = bar })
+	local fill = Theme.Frame({
+		Name = "Fill",
+		Size = UDim2.fromScale(0, 1),
+		Color = Theme.Colors.Green,
+		Radius = 20,
+		Stroke = false,
+		Parent = bar,
+	})
 	local label = Theme.Text(bar, "", { MaxSize = 22 })
 	label.Size = UDim2.new(1, -10, 1, -6)
 	label.Position = UDim2.fromOffset(5, 3)
@@ -59,7 +66,11 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 		local coinFraction = math.clamp(data.Coins / coinReq, 0, 1)
 		speedFill.Size = UDim2.fromScale(speedFraction, 1)
 		coinFill.Size = UDim2.fromScale(coinFraction, 1)
-		speedLabel.Text = "⚡ " .. Format.Number(math.floor(data.Speed)) .. " / " .. Format.Number(speedReq) .. " Speed"
+		speedLabel.Text = "⚡ "
+			.. Format.Number(math.floor(data.Speed))
+			.. " / "
+			.. Format.Number(speedReq)
+			.. " Speed"
 		coinLabel.Text = "💰 $" .. Format.Number(math.floor(data.Coins)) .. " / $" .. Format.Number(coinReq)
 		local nextRebirths = data.Rebirths + 1
 		reward.Text = "Reward: Speed gain +"

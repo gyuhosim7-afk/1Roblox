@@ -43,7 +43,11 @@ function UpgradeWindow.Create(screen: ScreenGui, ctx: any)
 		local title = Theme.Text(frame, def.Name, { MaxSize = 26, Align = Enum.TextXAlignment.Left })
 		title.Size = UDim2.new(1, -260, 0, 34)
 		title.Position = UDim2.fromOffset(74, 6)
-		local info = Theme.Text(frame, def.Description, { MaxSize = 18, Color = Theme.Colors.SubText, Align = Enum.TextXAlignment.Left })
+		local info = Theme.Text(
+			frame,
+			def.Description,
+			{ MaxSize = 18, Color = Theme.Colors.SubText, Align = Enum.TextXAlignment.Left }
+		)
 		info.Size = UDim2.new(1, -260, 0, 30)
 		info.Position = UDim2.fromOffset(74, 42)
 		local button = Theme.Button(frame, "Buy", Theme.Colors.Green, function()
@@ -74,7 +78,8 @@ function UpgradeWindow.Create(screen: ScreenGui, ctx: any)
 			elseif kind == "Incubators" then
 				detail = (state.IncubatorCapacity or Formulas.IncubatorCount(level)) .. " incubators  (+1 per level)"
 			elseif kind == "Lock" then
-				detail = Format.Duration(Formulas.LockSeconds(level, state.Passes and state.Passes.VIP)) .. " lock  (+15s per level)"
+				detail = Format.Duration(Formulas.LockSeconds(level, state.Passes and state.Passes.VIP))
+					.. " lock  (+15s per level)"
 			end
 			rowRefs.Info.Text = detail
 			if cost then

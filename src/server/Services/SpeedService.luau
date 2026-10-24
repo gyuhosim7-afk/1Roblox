@@ -95,7 +95,11 @@ function SpeedService.CheckGates()
 					character:PivotTo(CFrame.new(math.clamp(position.X, -20, 20), 4, backZ))
 				end
 				SpeedService.GateViolation:Fire(player)
-				Network.Notify(player, "You need more Speed to enter " .. Config.Zones[allowed + 1].Name .. "!", "error")
+				Network.Notify(
+					player,
+					"You need more Speed to enter " .. Config.Zones[allowed + 1].Name .. "!",
+					"error"
+				)
 			end
 		end
 	end

@@ -167,7 +167,13 @@ function Build.SurfaceText(part: BasePart, face: Enum.NormalId, text: string, co
 end
 
 -- Floating label above a part.
-function Build.Billboard(adornee: BasePart, text: string, size: UDim2?, offset: Vector3?, maxDistance: number?): BillboardGui
+function Build.Billboard(
+	adornee: BasePart,
+	text: string,
+	size: UDim2?,
+	offset: Vector3?,
+	maxDistance: number?
+): BillboardGui
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "Billboard"
 	gui.Adornee = adornee

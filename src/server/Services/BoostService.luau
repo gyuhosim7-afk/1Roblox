@@ -86,7 +86,11 @@ function BoostService.GetSpeedGain(player: Player): number
 	if not session then
 		return 0
 	end
-	return Formulas.SpeedGainPerSecond(session.Data.TrainingLevel, session.Data.Rebirths, BoostService.GetModifiers(player))
+	return Formulas.SpeedGainPerSecond(
+		session.Data.TrainingLevel,
+		session.Data.Rebirths,
+		BoostService.GetModifiers(player)
+	)
 end
 
 -- kind: "Luck" | "Speed"
@@ -112,7 +116,10 @@ function BoostService.AddServerLuck(seconds: number?, buyerName: string?)
 		PlayerService.MarkDirty(session.Player, true)
 	end
 	if buyerName then
-		Network.NotifyAll(buyerName .. " activated SERVER LUCK x" .. Config.Luck.ServerMultiplier .. " for everyone!", "rare")
+		Network.NotifyAll(
+			buyerName .. " activated SERVER LUCK x" .. Config.Luck.ServerMultiplier .. " for everyone!",
+			"rare"
+		)
 	end
 end
 

@@ -59,8 +59,20 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		return scroll
 	end
 
-	local function itemCard(parent: Instance, order: number, icon: string, title: string, description: string, color: Color3): Frame
-		local frame = Theme.Frame({ Size = UDim2.fromOffset(255, 200), Color = Theme.Colors.Panel, LayoutOrder = order, Parent = parent })
+	local function itemCard(
+		parent: Instance,
+		order: number,
+		icon: string,
+		title: string,
+		description: string,
+		color: Color3
+	): Frame
+		local frame = Theme.Frame({
+			Size = UDim2.fromOffset(255, 200),
+			Color = Theme.Colors.Panel,
+			LayoutOrder = order,
+			Parent = parent,
+		})
 		local stroke = frame:FindFirstChildOfClass("UIStroke")
 		if stroke then
 			stroke.Color = color
@@ -77,7 +89,10 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		return frame
 	end
 
-	local function buyRow(frame: Frame, buttons: { { text: string, color: Color3, onClick: () -> (), enabled: boolean? } })
+	local function buyRow(
+		frame: Frame,
+		buttons: { { text: string, color: Color3, onClick: () -> (), enabled: boolean? } }
+	)
 		local row = Instance.new("Frame")
 		row.BackgroundTransparency = 1
 		row.Size = UDim2.new(1, -12, 0, 54)
@@ -86,7 +101,13 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		Theme.List(row, 6, true)
 		local width = math.floor((243 - 6 * (#buttons - 1)) / #buttons)
 		for order, b in buttons do
-			local button = Theme.Button(row, b.text, b.color, b.onClick, { Size = UDim2.fromOffset(width, 52), LayoutOrder = order, MaxText = 20 })
+			local button = Theme.Button(
+				row,
+				b.text,
+				b.color,
+				b.onClick,
+				{ Size = UDim2.fromOffset(width, 52), LayoutOrder = order, MaxText = 20 }
+			)
 			if b.enabled == false then
 				Theme.SetButtonEnabled(button, false, b.color)
 			end
@@ -100,9 +121,17 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			local hidden = def.RandomItemModifier and state.Restricted
 			if not hidden then
 				local owned = state.Passes and state.Passes[key]
-				local frame = itemCard(scroll, order, PASS_ICONS[key] or "⭐", def.Name, def.Description, Theme.Colors.Accent)
+				local frame =
+					itemCard(scroll, order, PASS_ICONS[key] or "⭐", def.Name, def.Description, Theme.Colors.Accent)
 				if owned then
-					buyRow(frame, { { text = "OWNED ✔", color = Theme.Colors.Green, onClick = function() end, enabled = false } })
+					buyRow(frame, {
+						{
+							text = "OWNED ✔",
+							color = Theme.Colors.Green,
+							onClick = function() end,
+							enabled = false,
+						},
+					})
 				else
 					local buttons = {
 						{
@@ -154,7 +183,14 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		local scroll = makeGrid()
 		local restricted = state.Restricted
 		local order = 0
-		local function product(key: string, icon: string, description: string, gemItem: string?, color: Color3, extraButton: any?)
+		local function product(
+			key: string,
+			icon: string,
+			description: string,
+			gemItem: string?,
+			color: Color3,
+			extraButton: any?
+		)
 			local def = (Config.Products :: any)[key]
 			order += 1
 			local frame = itemCard(scroll, order, icon, def.Name, description, color)
@@ -231,7 +267,13 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 				}
 			)
 		end
-		product("SpeedPotion", "⚡", "Speed gain x" .. Config.Boosts.SpeedPotionMultiplier .. " for 15 minutes.", "SpeedPotion", Theme.Colors.Gold)
+		product(
+			"SpeedPotion",
+			"⚡",
+			"Speed gain x" .. Config.Boosts.SpeedPotionMultiplier .. " for 15 minutes.",
+			"SpeedPotion",
+			Theme.Colors.Gold
+		)
 		local income = state.IncomePerSecond or 0
 		product(
 			"CashSmall",

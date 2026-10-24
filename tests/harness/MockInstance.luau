@@ -139,8 +139,21 @@ local DEFAULTS_BY_CLASS = {
 	GuiButton = { AutoButtonColor = true, Selectable = true },
 	LayerCollector = { Enabled = true, ResetOnSpawn = true },
 	Light = { Enabled = true, Brightness = 1, Range = 8 },
-	ProximityPrompt = { Enabled = true, HoldDuration = 0, MaxActivationDistance = 10, ActionText = "Interact", ObjectText = "" },
-	Humanoid = { WalkSpeed = 16, JumpPower = 50, JumpHeight = 7.2, Health = 100, MaxHealth = 100, PlatformStand = false },
+	ProximityPrompt = {
+		Enabled = true,
+		HoldDuration = 0,
+		MaxActivationDistance = 10,
+		ActionText = "Interact",
+		ObjectText = "",
+	},
+	Humanoid = {
+		WalkSpeed = 16,
+		JumpPower = 50,
+		JumpHeight = 7.2,
+		Health = 100,
+		MaxHealth = 100,
+		PlatformStand = false,
+	},
 	ParticleEmitter = { Enabled = true, Rate = 5 },
 	Beam = { Enabled = true },
 	Sound = { Volume = 0.5, Playing = false, Looped = false },
@@ -622,7 +635,12 @@ function MockInstance.newLibrary(scheduler: any)
 			return found
 		end
 		if not coroutine.isyieldable() then
-			error("WaitForChild(" .. name .. ") would yield forever on main thread; child missing in " .. self:GetFullName())
+			error(
+				"WaitForChild("
+					.. name
+					.. ") would yield forever on main thread; child missing in "
+					.. self:GetFullName()
+			)
 		end
 		local thread = coroutine.running()
 		local waiters = data(self).childWaiters
@@ -717,7 +735,18 @@ function MockInstance.newLibrary(scheduler: any)
 
 	function Methods:SetAttribute(name: string, value: any)
 		local t = typeof(value)
-		if value ~= nil and t ~= "number" and t ~= "string" and t ~= "boolean" and t ~= "Vector3" and t ~= "Color3" and t ~= "CFrame" and t ~= "UDim2" and t ~= "Vector2" and t ~= "NumberRange" then
+		if
+			value ~= nil
+			and t ~= "number"
+			and t ~= "string"
+			and t ~= "boolean"
+			and t ~= "Vector3"
+			and t ~= "Color3"
+			and t ~= "CFrame"
+			and t ~= "UDim2"
+			and t ~= "Vector2"
+			and t ~= "NumberRange"
+		then
 			error("SetAttribute: unsupported attribute type " .. t .. " for " .. name)
 		end
 		local d = data(self)

@@ -117,7 +117,9 @@ local function updateIncubatorLabels()
 					label.Text = "⚠ BEING STOLEN!"
 				else
 					local remaining = (part:GetAttribute("HatchAt") or 0) - now
-					label.Text = Config.Eggs[eggId].Name .. "\n" .. (if remaining > 0 then Format.Clock(remaining) else "Hatching...")
+					label.Text = Config.Eggs[eggId].Name
+						.. "\n"
+						.. (if remaining > 0 then Format.Clock(remaining) else "Hatching...")
 				end
 			end
 			-- owner's hatch prompt shows the gem price

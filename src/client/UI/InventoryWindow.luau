@@ -73,17 +73,20 @@ function InventoryWindow.Create(screen: ScreenGui, ctx: any)
 		end
 		local icon = SlimeIcon.Create(frame, slime.Kind, slime.Mutation, 64)
 		icon.Position = UDim2.new(0.5, -32, 0, 4)
-		local mutationName = if slime.Mutation ~= "None" then (Config.Mutations :: any)[slime.Mutation].Name .. " " else ""
+		local mutationName = if slime.Mutation ~= "None"
+			then (Config.Mutations :: any)[slime.Mutation].Name .. " "
+			else ""
 		local name = Theme.Text(frame, mutationName .. def.Name, {
 			MaxSize = 16,
 			Color = Theme.Hex(Config.Rarities[def.Rarity].Color),
 		})
 		name.Size = UDim2.new(1, -8, 0, 34)
 		name.Position = UDim2.fromOffset(4, 68)
-		local income = Theme.Text(frame, "$" .. Format.Number(Formulas.SlimeIncome(slime.Kind, slime.Mutation)) .. "/s", {
-			MaxSize = 16,
-			Color = Theme.Colors.Green,
-		})
+		local income =
+			Theme.Text(frame, "$" .. Format.Number(Formulas.SlimeIncome(slime.Kind, slime.Mutation)) .. "/s", {
+				MaxSize = 16,
+				Color = Theme.Colors.Green,
+			})
 		income.Size = UDim2.new(1, -8, 0, 20)
 		income.Position = UDim2.fromOffset(4, 102)
 		if onPedestal then
@@ -94,9 +97,15 @@ function InventoryWindow.Create(screen: ScreenGui, ctx: any)
 		Theme.Button(frame, if slime.Locked then "🔒" else "🔓", Theme.Colors.PanelLight, function()
 			ctx.Request("LockSlime", slime.Id)
 		end, { Size = UDim2.fromOffset(42, 46), Position = UDim2.fromOffset(6, 142), MaxText = 20 })
-		local sell = Theme.Button(frame, "Sell $" .. Format.Number(Formulas.SellPrice(slime.Kind, slime.Mutation)), Theme.Colors.Red, function()
-			ctx.Request("SellSlime", slime.Id)
-		end, { Size = UDim2.fromOffset(90, 46), Position = UDim2.fromOffset(52, 142), MaxText = 14 })
+		local sell = Theme.Button(
+			frame,
+			"Sell $" .. Format.Number(Formulas.SellPrice(slime.Kind, slime.Mutation)),
+			Theme.Colors.Red,
+			function()
+				ctx.Request("SellSlime", slime.Id)
+			end,
+			{ Size = UDim2.fromOffset(90, 46), Position = UDim2.fromOffset(52, 142), MaxText = 14 }
+		)
 		if slime.Locked then
 			Theme.SetButtonEnabled(sell, false, Theme.Colors.Red)
 		end

@@ -84,7 +84,8 @@ local function coinPop(amount: number)
 	label.AnchorPoint = Vector2.new(0.5, 0.5)
 	label.Position = UDim2.fromScale(0.5, 0.42)
 	Theme.AutoScale(label)
-	TweenService:Create(label, TweenInfo.new(1.1), { Position = UDim2.fromScale(0.5, 0.12), TextTransparency = 1 }):Play()
+	TweenService:Create(label, TweenInfo.new(1.1), { Position = UDim2.fromScale(0.5, 0.12), TextTransparency = 1 })
+		:Play()
 	task.delay(1.2, function()
 		label:Destroy()
 	end)
@@ -129,12 +130,20 @@ local HANDLERS: { [string]: (any) -> () } = {
 		if type(payload) == "table" then
 			Popups.Message(
 				"Welcome back!",
-				"Your slimes earned $" .. Format.Number(payload.Coins or 0) .. " while you were away (" .. Format.Duration(payload.Seconds or 0) .. ")."
+				"Your slimes earned $"
+					.. Format.Number(payload.Coins or 0)
+					.. " while you were away ("
+					.. Format.Duration(payload.Seconds or 0)
+					.. ")."
 			)
 		end
 	end,
 	Rebirth = function(payload)
-		Popups.Message("REBIRTH " .. tostring(payload and payload.Rebirths or ""), "You are faster and richer than ever. Run!", Theme.Colors.Accent)
+		Popups.Message(
+			"REBIRTH " .. tostring(payload and payload.Rebirths or ""),
+			"You are faster and richer than ever. Run!",
+			Theme.Colors.Accent
+		)
 	end,
 }
 
@@ -155,7 +164,7 @@ function EffectController.Start()
 		if source then
 			local speaker = Players:GetPlayerByUserId(source.UserId)
 			if speaker and speaker:GetAttribute("VIP") then
-				properties.PrefixText = "<font color=\"#FFD54F\">[VIP]</font> " .. message.PrefixText
+				properties.PrefixText = '<font color="#FFD54F">[VIP]</font> ' .. message.PrefixText
 			end
 		end
 		return properties

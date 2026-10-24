@@ -71,9 +71,26 @@ for _, zone in MapLayout.Zones do
 	for _, g in zone.Guards do
 		if g.Z >= minZ and g.Z <= maxZ then
 			if g.Kind == "Patrol" then
-				table.insert(out, string.format("<line x1='%.1f' y1='%.1f' x2='%.1f' y2='%.1f' stroke='red' stroke-width='2'/>", tx(-g.Amplitude), tz(g.Z), tx(g.Amplitude), tz(g.Z)))
+				table.insert(
+					out,
+					string.format(
+						"<line x1='%.1f' y1='%.1f' x2='%.1f' y2='%.1f' stroke='red' stroke-width='2'/>",
+						tx(-g.Amplitude),
+						tz(g.Z),
+						tx(g.Amplitude),
+						tz(g.Z)
+					)
+				)
 			else
-				table.insert(out, string.format("<circle cx='%.1f' cy='%.1f' r='%.1f' fill='none' stroke='orange' stroke-width='2'/>", tx(g.X), tz(g.Z), g.Amplitude * scale))
+				table.insert(
+					out,
+					string.format(
+						"<circle cx='%.1f' cy='%.1f' r='%.1f' fill='none' stroke='orange' stroke-width='2'/>",
+						tx(g.X),
+						tz(g.Z),
+						g.Amplitude * scale
+					)
+				)
 			end
 		end
 	end

@@ -43,7 +43,19 @@ local milestones = {}
 local function mark(name)
 	if not milestones[name] then
 		milestones[name] = p.t
-		print(string.format("%8s  %-28s speed %-8s coins %-8s income %-8s/s slimes %d training %d R%d", Format.Duration(p.t), name, Format.Number(p.speed), Format.Number(p.coins), Format.Number(0), #p.slimes, p.training, p.rebirths))
+		print(
+			string.format(
+				"%8s  %-28s speed %-8s coins %-8s income %-8s/s slimes %d training %d R%d",
+				Format.Duration(p.t),
+				name,
+				Format.Number(p.speed),
+				Format.Number(p.coins),
+				Format.Number(0),
+				#p.slimes,
+				p.training,
+				p.rebirths
+			)
+		)
 	end
 end
 
@@ -71,7 +83,10 @@ local function advance(seconds)
 		for i = #p.eggs, 1, -1 do
 			if p.eggs[i].hatchAt <= p.t then
 				local kind, mutation = Odds.Roll(p.eggs[i].egg, 1, roll)
-				table.insert(p.slimes, { kind = kind, mutation = mutation, income = Formulas.SlimeIncome(kind, mutation) })
+				table.insert(
+					p.slimes,
+					{ kind = kind, mutation = mutation, income = Formulas.SlimeIncome(kind, mutation) }
+				)
 				table.remove(p.eggs, i)
 			end
 		end
@@ -168,7 +183,13 @@ local capacity = function()
 	return Formulas.IncubatorCount(p.incubators, mods.ExtraIncubators)
 end
 
-print(string.format("Simulating %d hours (%s)", HOURS, if PAID then "PAID: 2x coins, 2x speed, +2 incubators" else "free player"))
+print(
+	string.format(
+		"Simulating %d hours (%s)",
+		HOURS,
+		if PAID then "PAID: 2x coins, 2x speed, +2 incubators" else "free player"
+	)
+)
 while p.t < HOURS * 3600 do
 	if #p.eggs < capacity() then
 		trip()
@@ -185,6 +206,17 @@ while p.t < HOURS * 3600 do
 	tryRebirth()
 end
 
-print(string.format("\nAfter %s: speed %s, coins %s, income %s/s, rebirths %d, training %d, pedestals %d, incubators %d, slimes %d",
-	Format.Duration(p.t), Format.Number(p.speed), Format.Number(p.coins), Format.Number(income()), p.rebirths, p.training,
-	Formulas.PedestalCount(p.pedestals), capacity(), #p.slimes))
+print(
+	string.format(
+		"\nAfter %s: speed %s, coins %s, income %s/s, rebirths %d, training %d, pedestals %d, incubators %d, slimes %d",
+		Format.Duration(p.t),
+		Format.Number(p.speed),
+		Format.Number(p.coins),
+		Format.Number(income()),
+		p.rebirths,
+		p.training,
+		Formulas.PedestalCount(p.pedestals),
+		capacity(),
+		#p.slimes
+	)
+)

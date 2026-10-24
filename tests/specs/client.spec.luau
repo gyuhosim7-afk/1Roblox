@@ -34,7 +34,11 @@ return function(t)
 
 	local function findText(root, pattern)
 		for _, d in root:GetDescendants() do
-			if (d.ClassName == "TextLabel" or d.ClassName == "TextButton") and type(d.Text) == "string" and d.Text:find(pattern) then
+			if
+				(d.ClassName == "TextLabel" or d.ClassName == "TextButton")
+				and type(d.Text) == "string"
+				and d.Text:find(pattern)
+			then
 				return d
 			end
 		end

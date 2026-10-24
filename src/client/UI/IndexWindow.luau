@@ -50,9 +50,11 @@ function IndexWindow.Create(screen: ScreenGui, ctx: any)
 		local scroll = Theme.Scroll(body)
 		Theme.List(scroll, 6)
 		local luck = state.Luck or 1
-		local header = Theme.Text(scroll, OddsView.LuckText(luck), { MaxSize = 20, Color = Theme.Colors.Gold, LayoutOrder = 0 })
+		local header =
+			Theme.Text(scroll, OddsView.LuckText(luck), { MaxSize = 20, Color = Theme.Colors.Gold, LayoutOrder = 0 })
 		header.Size = UDim2.new(1, -8, 0, 28)
-		local disclaimer = Theme.Text(scroll, OddsView.Disclaimer, { MaxSize = 14, Color = Theme.Colors.SubText, LayoutOrder = 1 })
+		local disclaimer =
+			Theme.Text(scroll, OddsView.Disclaimer, { MaxSize = 14, Color = Theme.Colors.SubText, LayoutOrder = 1 })
 		disclaimer.Size = UDim2.new(1, -8, 0, 20)
 		local order = 2
 		for zoneIndex, zone in Config.Zones do
@@ -61,11 +63,25 @@ function IndexWindow.Create(screen: ScreenGui, ctx: any)
 			local unlocked = zoneIndex <= state.Data.BestZone
 			local title = Theme.Text(
 				scroll,
-				egg.Name .. "  -  " .. zone.Name .. (if unlocked then "" else "  (need " .. Format.Number(zone.GateSpeed) .. " Speed)"),
-				{ MaxSize = 22, Color = Theme.Hex(egg.SpotColor), LayoutOrder = order, Align = Enum.TextXAlignment.Left }
+				egg.Name
+					.. "  -  "
+					.. zone.Name
+					.. (if unlocked then "" else "  (need " .. Format.Number(zone.GateSpeed) .. " Speed)"),
+				{
+					MaxSize = 22,
+					Color = Theme.Hex(egg.SpotColor),
+					LayoutOrder = order,
+					Align = Enum.TextXAlignment.Left,
+				}
 			)
 			title.Size = UDim2.new(1, -8, 0, 32)
-			order = OddsView.Build(scroll, Odds.EggOdds(zone.Egg, luck), Odds.MutationOdds(luck), state.Data.Discovered, order)
+			order = OddsView.Build(
+				scroll,
+				Odds.EggOdds(zone.Egg, luck),
+				Odds.MutationOdds(luck),
+				state.Data.Discovered,
+				order
+			)
 		end
 	end
 
@@ -107,7 +123,9 @@ function IndexWindow.Create(screen: ScreenGui, ctx: any)
 				name.Position = UDim2.fromOffset(4, 72)
 				local reward = Theme.Text(
 					frame,
-					if known then "$" .. Format.Number(def.Income) .. "/s" else "+" .. Config.Rarities[def.Rarity].DiscoveryGems .. " 💎",
+					if known
+						then "$" .. Format.Number(def.Income) .. "/s"
+						else "+" .. Config.Rarities[def.Rarity].DiscoveryGems .. " 💎",
 					{ MaxSize = 14, Color = if known then Theme.Colors.Green else Theme.Colors.Gem }
 				)
 				reward.Size = UDim2.new(1, -8, 0, 20)

@@ -48,7 +48,13 @@ function OddsView.Build(
 		local known = discovered == nil or discovered[entry.Slime] == true
 		local name = if known then def.Name else "???"
 		local rarityColor = Theme.Hex(Config.Rarities[def.Rarity].Color)
-		row(parent, name .. "  <font size=\"14\">" .. def.Rarity .. "</font>", Format.Percent(entry.Chance), rarityColor, order)
+		row(
+			parent,
+			name .. '  <font size="14">' .. def.Rarity .. "</font>",
+			Format.Percent(entry.Chance),
+			rarityColor,
+			order
+		)
 	end
 	order += 1
 	local mutationText = {}
