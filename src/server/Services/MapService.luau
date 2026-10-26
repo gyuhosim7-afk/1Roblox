@@ -20,6 +20,7 @@ MapService.Nests = {} :: { { Zone: number, Index: number, Part: BasePart, Positi
 MapService.Gates = {} :: { { Zone: number, Part: BasePart } }
 
 local GROUND_Y = 0
+local WORLD_WIDTH = 1400 -- ground reaches the horizon so no other color shows past a zone
 
 local function v3(x: number, y: number, z: number): Vector3
 	return Vector3.new(x, y, z)
@@ -448,6 +449,34 @@ local function buildPlazaDecor(home: Instance, roadStart: number, homeEnd: numbe
 	Build.SurfaceText(banner, Enum.NormalId.Front, "GO HOME FAST!", Color3.new(1, 1, 1))
 end
 
+-- Trees, bushes and rocks around the bases so the home area never looks like an empty field.
+local function buildHomeForest(home: Instance, roadStart: number, homeEnd: number, halfWidth: number)
+	local forest = Build.Folder("Forest", home)
+	local rng = (Random.new(4242) :: any) :: Rng
+	local keys = { "Decor_RoundTree", "Decor_RoundTree", "Decor_Pine", "Decor_Bush", "Decor_Rock" }
+	local z = roadStart - 30
+	while z < homeEnd do
+		for _, side in { -1, 1 } do
+			for _ = 1, 2 do
+				local key = keys[rng:NextInteger(1, #keys)]
+				local pos =
+					v3(side * rng:NextNumber(halfWidth + 10, halfWidth + 90), GROUND_Y, z + rng:NextNumber(-8, 8))
+				if not meshDecor(forest, key, pos, rng:NextNumber(0.9, 1.6), rng:NextNumber(0, 6.28)) then
+					tree(forest, pos, 1.2, "#8D6E63", "#66BB6A")
+				end
+			end
+		end
+		z += 22
+	end
+	-- a row behind the last bases
+	for x = -halfWidth - 60, halfWidth + 60, 20 do
+		local pos = v3(x + rng:NextNumber(-6, 6), GROUND_Y, roadStart - rng:NextNumber(14, 50))
+		if not meshDecor(forest, "Decor_Pine", pos, rng:NextNumber(1, 1.7), rng:NextNumber(0, 6.28)) then
+			pine(forest, pos, 1.3, "#2E7D32")
+		end
+	end
+end
+
 local function buildHome(root: Instance)
 	local home = Build.Folder("Home", root)
 	local roadStart = MapLayout.RoadStartZ
@@ -458,7 +487,7 @@ local function buildHome(root: Instance)
 
 	Build.Part({
 		Name = "Ground",
-		Size = v3(halfWidth * 2, 2, homeLength),
+		Size = v3(WORLD_WIDTH, 2, homeLength),
 		Position = v3(0, GROUND_Y - 1, centerZ),
 		Color = "#7CCB5B",
 		Material = Enum.Material.Grass,
@@ -499,6 +528,7 @@ local function buildHome(root: Instance)
 		})
 	end
 	buildPlazaDecor(home, roadStart, homeEnd)
+	buildHomeForest(home, roadStart, homeEnd, halfWidth)
 
 	-- invisible boundary walls around the home area
 	local wallHeight = Config.Map.RoadWallHeight
@@ -674,9 +704,10 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 	local sideWidth = Config.Map.ZoneSideWidth
 	local fullWidth = (halfRoad + sideWidth) * 2
 
+	local _ = fullWidth
 	Build.Part({
 		Name = "Ground",
-		Size = v3(fullWidth, 2, length),
+		Size = v3(WORLD_WIDTH, 2, length),
 		Position = v3(0, GROUND_Y - 1, centerZ),
 		Color = Build.Shade(Build.Hex(def.GroundColor), -0.15),
 		Material = if def.Decor == "Snow"
@@ -688,14 +719,21 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 			else Enum.Material.Grass,
 		Parent = folder,
 	})
-	Build.Part({
-		Name = "Road",
-		Size = v3(Config.Map.RoadWidth, 0.2, length),
-		Position = v3(0, GROUND_Y + 0.1, centerZ),
-		Color = def.GroundColor,
-		Material = Enum.Material.SmoothPlastic,
-		Parent = folder,
-	})
+	-- Runway in alternating bands so it reads like a race track
+	local bands = math.max(1, math.floor(length / 20))
+	local bandLength = length / bands
+	local roadColor = Build.Hex(def.GroundColor)
+	for band = 0, bands - 1 do
+		Build.Part({
+			Name = "Road",
+			Size = v3(Config.Map.RoadWidth, 0.2, bandLength),
+			Position = v3(0, GROUND_Y + 0.1, centerZ - length / 2 + bandLength * (band + 0.5)),
+			Color = if band % 2 == 0 then roadColor else Build.Shade(roadColor, 0.18),
+			Material = Enum.Material.SmoothPlastic,
+			CastShadow = false,
+			Parent = folder,
+		})
+	end
 	for _, side in { -1, 1 } do
 		Build.Part({
 			Name = "Edge",
@@ -717,13 +755,62 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 	-- Decor on both sides
 	local decor = Build.Folder("Decor", folder)
 	local builder = DECOR[def.Decor] or DECOR.Meadow
-	local count = math.floor(length / 14)
+	local zMin = layout.StartZ - Config.Map.GateGap / 2 + 4
+	local zMax = layout.EndZ + Config.Map.GateGap / 2 - 4
+	local count = math.floor(length / 8)
 	for _ = 1, count do
 		for _, side in { -1, 1 } do
 			local x = side * rng:NextNumber(halfRoad + 8, halfRoad + sideWidth - 6)
-			local z =
-				rng:NextNumber(layout.StartZ - Config.Map.GateGap / 2 + 4, layout.EndZ + Config.Map.GateGap / 2 - 4)
-			builder(decor, v3(x, GROUND_Y, z), rng)
+			builder(decor, v3(x, GROUND_Y, rng:NextNumber(zMin, zMax)), rng)
+		end
+	end
+	-- Colored ground patches (flower beds, dunes, snow drifts, lava cracks...) break up flat ground
+	local ground = Build.Hex(def.GroundColor)
+	local patchColor = if def.Decor == "Volcano"
+		then Build.Hex("#FF6A1A")
+		elseif def.Decor == "Void" or def.Decor == "Crystal" then Build.Hex(def.AccentColor)
+		else Build.Shade(ground, 0.2)
+	local patchNeon = def.Decor == "Volcano" or def.Decor == "Void" or def.Decor == "Crystal"
+	for _ = 1, math.floor(length / 30) do
+		for _, side in { -1, 1 } do
+			local size = rng:NextNumber(10, 26) * (if patchNeon then 0.45 else 1)
+			Build.Part({
+				Name = "Patch",
+				Shape = Enum.PartType.Cylinder,
+				Size = v3(0.3, size, size * rng:NextNumber(0.6, 1)),
+				CFrame = CFrame.new(
+					side * rng:NextNumber(halfRoad + 6, halfRoad + sideWidth + 40),
+					GROUND_Y + 0.05,
+					rng:NextNumber(zMin, zMax)
+				) * CFrame.Angles(0, rng:NextNumber(0, 6.28), math.rad(90)),
+				Color = patchColor,
+				Material = if patchNeon then Enum.Material.Neon else Enum.Material.SmoothPlastic,
+				Transparency = if patchNeon then 0.35 else 0,
+				CanCollide = false,
+				CastShadow = false,
+				Parent = decor,
+			})
+		end
+	end
+	-- Rolling hills on the horizon
+	for _ = 1, math.max(2, math.floor(length / 70)) do
+		for _, side in { -1, 1 } do
+			local size = rng:NextNumber(70, 140)
+			Build.Part({
+				Name = "Hill",
+				Shape = Enum.PartType.Ball,
+				Size = v3(size, size, size),
+				Position = v3(
+					side * rng:NextNumber(halfRoad + sideWidth + 70, halfRoad + sideWidth + 160),
+					-size * 0.3,
+					rng:NextNumber(zMin, zMax)
+				),
+				Color = Build.Shade(ground, rng:NextNumber(-0.25, 0.05)),
+				Material = Enum.Material.SmoothPlastic,
+				CanCollide = false,
+				CastShadow = false,
+				Parent = decor,
+			})
 		end
 	end
 

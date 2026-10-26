@@ -108,6 +108,19 @@ local function buildPlot(parent: Instance, layout: MapLayout.PlotLayout): PlotSt
 	local signGui = Build.SurfaceText(sign, Enum.NormalId.Front, "Empty Base", Color3.new(1, 1, 1))
 	local signLabel = signGui:FindFirstChild("Label") :: TextLabel
 
+	-- Darker rugs under the pedestal grid and the incubator row so the floor isn't one flat color
+	for _, rug in { { X = -9.5, Z = 5.5, W = 31, D = 44 }, { X = 20, Z = 2.5, W = 8, D = 44 } } do
+		Build.Part({
+			Name = "Rug",
+			Size = Vector3.new(rug.W, 0.12, rug.D),
+			CFrame = localCFrame(plotCFrame, rug.X, 1.06, rug.Z),
+			Color = Build.Shade(floorColor, -0.18),
+			CanCollide = false,
+			CastShadow = false,
+			Parent = model,
+		})
+	end
+
 	-- Incubators
 	local incubators: { Slot } = {}
 	for index, point in MapLayout.PlotLocal.Incubators do

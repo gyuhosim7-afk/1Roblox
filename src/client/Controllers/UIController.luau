@@ -99,6 +99,14 @@ function UIController.Init()
 	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	screen.Parent = playerGui
 
+	-- Roblox's chat window opens top-left by default, right over the coin counters: move it down.
+	pcall(function()
+		local config = game:GetService("TextChatService"):FindFirstChildOfClass("ChatWindowConfiguration")
+		if config then
+			config.VerticalAlignment = Enum.VerticalAlignment.Bottom
+		end
+	end)
+
 	local ctx = {
 		Close = UIController.Close,
 		Open = UIController.Open,

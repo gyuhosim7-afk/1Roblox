@@ -39,6 +39,7 @@ local function buildPatrol(guard: MapLayout.Guard): Model
 		glow.Range = r * 3
 		glow.Parent = mesh
 		model.WorldPivot = CFrame.new()
+		model:PivotTo(CFrame.new(guard.X, 0, guard.Z)) -- start on its own path, not at the map origin
 		model.Parent = folder
 		return model
 	end
@@ -83,6 +84,7 @@ local function buildPatrol(guard: MapLayout.Guard): Model
 	light.Range = r * 3
 	light.Parent = body
 	model.WorldPivot = CFrame.new() -- pivot on the ground under the guard
+	model:PivotTo(CFrame.new(guard.X, 0, guard.Z)) -- start on its own path, not at the map origin
 	model.Parent = folder
 	return model
 end

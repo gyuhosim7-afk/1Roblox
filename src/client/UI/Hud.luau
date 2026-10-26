@@ -227,25 +227,22 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	speedRow.BackgroundTransparency = 1
 	speedRow.Size = UDim2.new(1, 0, 0, 48)
 	speedRow.Parent = bottom
-	Theme.Icon(speedRow, "Speed", UDim2.fromOffset(58, 58), UDim2.new(0.5, -112, 0.5, -2), Vector2.new(0.5, 0.5))
-	local speedValue = Theme.Text(speedRow, "0", {
-		Name = "Value",
-		MaxSize = 40,
-		Color = Theme.Colors.Gold,
-		Align = Enum.TextXAlignment.Left,
-		StrokeThickness = 3.5,
-	})
-	speedValue.Size = UDim2.new(0, 170, 1, 0)
-	speedValue.Position = UDim2.new(0.5, -80, 0, 0)
-	local perSecond = Theme.Text(speedRow, "+1/s", {
-		Name = "PerSecond",
-		MaxSize = 22,
-		Color = Color3.fromRGB(150, 255, 140),
-		Align = Enum.TextXAlignment.Left,
-		StrokeThickness = 2.5,
-	})
-	perSecond.Size = UDim2.fromOffset(110, 26)
-	perSecond.Position = UDim2.new(0.5, 70, 0.5, -6)
+	-- icon, number and "+x/s" sit side by side and stay centered whatever the number's width
+	local rowLayout = Theme.List(speedRow, 6, true)
+	rowLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	local speedIcon = Theme.Icon(speedRow, "Speed", UDim2.fromOffset(58, 58))
+	speedIcon.LayoutOrder = 1
+	local function autoText(text: string, name: string, size: number, color: Color3, stroke: number, order: number)
+		local label = Theme.Text(speedRow, text, { Name = name, Color = color, StrokeThickness = stroke })
+		label.TextScaled = false
+		label.TextSize = size
+		label.AutomaticSize = Enum.AutomaticSize.X
+		label.Size = UDim2.fromOffset(0, size + 6)
+		label.LayoutOrder = order
+		return label
+	end
+	local speedValue = autoText("0", "Value", 40, Theme.Colors.Gold, 3.5, 2)
+	local perSecond = autoText("+1/s", "PerSecond", 22, Color3.fromRGB(150, 255, 140), 2.5, 3)
 	refs.Speed = speedValue
 	refs.PerSecond = perSecond
 
