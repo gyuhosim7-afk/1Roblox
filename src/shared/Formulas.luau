@@ -15,6 +15,7 @@ export type Modifiers = {
 	SpeedPotion: boolean?,
 	ServerLuck: boolean?,
 	ExtraIncubators: boolean?,
+	TreadmillMultiplier: number?, -- set while standing on an owned treadmill
 }
 
 -- Cost to go from `level` to `level + 1`. Returns nil when already at max level.
@@ -59,6 +60,9 @@ function Formulas.SpeedGainPerSecond(trainingLevel: number, rebirths: number, mo
 	end
 	if mods.SpeedPotion then
 		mult *= Config.Boosts.SpeedPotionMultiplier
+	end
+	if mods.TreadmillMultiplier then
+		mult *= mods.TreadmillMultiplier
 	end
 	return base * mult
 end
@@ -132,6 +136,18 @@ function Formulas.CashPackCoins(productKey: string, incomePerSecond: number): nu
 		return 0
 	end
 	return math.max(def.MinCoins, math.floor(incomePerSecond * def.CashSeconds))
+end
+
+-- Can this player use a treadmill? (owned list = data.Treadmills, passes = owned game passes)
+function Formulas.OwnsTreadmill(id: string, owned: { [string]: boolean }?, passes: { [string]: boolean }?): boolean
+	local def = Config.Treadmills[id]
+	if not def then
+		return false
+	end
+	if def.RequiresPass then
+		return passes ~= nil and passes[def.RequiresPass] == true
+	end
+	return def.Cost <= 0 or (owned ~= nil and owned[id] == true)
 end
 
 -- streak is 1-based (1 = first day)

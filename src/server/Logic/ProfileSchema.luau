@@ -41,6 +41,7 @@ export type Data = {
 	Purchases: { [string]: number },
 	PurchaseOrder: { string },
 	PassCache: { [string]: boolean },
+	Treadmills: { [string]: boolean },
 }
 
 function ProfileSchema.Default(now: number): Data
@@ -77,6 +78,7 @@ function ProfileSchema.Default(now: number): Data
 		Purchases = {},
 		PurchaseOrder = {},
 		PassCache = {},
+		Treadmills = {},
 	}
 end
 
@@ -146,7 +148,7 @@ function ProfileSchema.Reconcile(
 	end
 
 	-- Dictionaries
-	for _, key in { "Discovered", "Purchases", "PassCache" } do
+	for _, key in { "Discovered", "Purchases", "PassCache", "Treadmills" } do
 		if type(data[key]) ~= "table" then
 			data[key] = {}
 		end

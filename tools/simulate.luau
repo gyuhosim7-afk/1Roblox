@@ -113,7 +113,31 @@ local function sellSurplus()
 	end
 end
 
+local ownedTreadmills: { [string]: boolean } = {}
+local function bestTreadmill(): number
+	local best = 1
+	for _, id in Config.TreadmillOrder do
+		if Formulas.OwnsTreadmill(id, ownedTreadmills, { VIP = PAID }) then
+			best = math.max(best, Config.Treadmills[id].Multiplier)
+		end
+	end
+	return best
+end
+
+local function buyTreadmills()
+	for _, id in Config.TreadmillOrder do
+		local def = Config.Treadmills[id]
+		-- buy when it costs at most ~1/3 of current coins (players keep money for upgrades too)
+		if not def.RequiresPass and def.Cost > 0 and not ownedTreadmills[id] and p.coins >= def.Cost * 3 then
+			p.coins -= def.Cost
+			ownedTreadmills[id] = true
+			mark("Treadmill " .. id)
+		end
+	end
+end
+
 local function buyUpgrades()
+	buyTreadmills()
 	local bought = true
 	while bought do
 		bought = false
@@ -199,7 +223,10 @@ while p.t < HOURS * 3600 do
 		for _, e in p.eggs do
 			nextHatch = math.min(nextHatch, e.hatchAt)
 		end
+		-- while waiting for hatches, train on the best owned treadmill
+		mods.TreadmillMultiplier = bestTreadmill()
 		advance(math.max(1, math.min(nextHatch - p.t, 60)))
+		mods.TreadmillMultiplier = nil
 	end
 	sellSurplus()
 	buyUpgrades()
