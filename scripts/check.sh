@@ -28,10 +28,11 @@ echo "ok"
 echo "== Lune tests"
 lune run tests/run
 
-echo "== Rojo build"
+echo "== Build place"
+# The shipped place keeps what was saved in Studio (lighting effects etc.) and only gets fresh
+# scripts copied in. rojo (if installed) just verifies the project tree builds.
 if have_rojo; then
-  rojo build default.project.json -o build/StealASlime.rbxl
-else
-  lune run tools/build_place build/StealASlime.rbxl
+  rojo build default.project.json -o "${TMPDIR:-/tmp}/StealASlime.check.rbxl" >/dev/null
 fi
+lune run tools/build_place build/StealASlime.rbxl
 echo "All checks passed."

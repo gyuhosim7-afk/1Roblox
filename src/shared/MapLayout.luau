@@ -159,6 +159,38 @@ MapLayout.RoadStartZ = minPlotZ - map.PlotSize / 2 - 24
 MapLayout.HomeHalfWidth = map.PlotColumnsX + map.PlotSize / 2 + 8
 MapLayout.HalfRoad = HALF_ROAD
 
+-- Treadmills: in Config.TreadmillOrder, filling rows left to right.
+export type TreadmillLayout = { Id: string, X: number, Z: number }
+local treadmills: { TreadmillLayout } = {}
+do
+	local layout = Config.TreadmillLayout
+	local index = 0
+	for _, z in layout.RowZ do
+		for _, x in layout.ColumnX do
+			index += 1
+			local id = Config.TreadmillOrder[index]
+			if id then
+				table.insert(treadmills, { Id = id, X = x, Z = z })
+			end
+		end
+	end
+end
+MapLayout.Treadmills = treadmills
+
+-- Treadmill id under (x, y, z), or nil. y is height above the ground.
+function MapLayout.TreadmillAt(x: number, y: number, z: number): string?
+	local layout = Config.TreadmillLayout
+	if y > layout.MaxStandHeight then
+		return nil
+	end
+	for _, t in treadmills do
+		if math.abs(x - t.X) <= layout.Width / 2 and math.abs(z - t.Z) <= layout.Length / 2 then
+			return t.Id
+		end
+	end
+	return nil
+end
+
 -- Plot-local (lx, lz) -> world (x, z)
 function MapLayout.PlotToWorld(plot: PlotLayout, lx: number, lz: number): (number, number)
 	return plot.X + lz * plot.Side, plot.Z - lx * plot.Side

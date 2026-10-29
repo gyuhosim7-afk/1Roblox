@@ -8,6 +8,7 @@ local ORDER = {
 	"UIController",
 	"WorldController",
 	"GuardController",
+	"TreadmillController",
 	"EffectController",
 	"InputController",
 }
