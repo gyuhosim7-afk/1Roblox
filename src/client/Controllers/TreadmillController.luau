@@ -103,7 +103,11 @@ local function refreshLabels(state: any)
 			local label = billboard and billboard:FindFirstChild("Label") :: TextLabel?
 			if label then
 				local lockText = if def.RequiresPass then "VIP only" else "$" .. Format.Number(def.Cost)
-				label.Text = def.Name .. "\nx" .. def.Multiplier .. " Speed" .. (if mine then "" else "  🔒 " .. lockText)
+				label.Text = def.Name
+					.. "\nx"
+					.. def.Multiplier
+					.. " Speed"
+					.. (if mine then "" else "  🔒 " .. lockText)
 			end
 			local prompt = console and console:FindFirstChild("BuyPrompt") :: ProximityPrompt?
 			if prompt then

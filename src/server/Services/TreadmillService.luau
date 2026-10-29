@@ -81,7 +81,9 @@ function TreadmillService.Tick()
 			if id and not multiplier and session.Runtime.TreadmillHint ~= id then
 				session.Runtime.TreadmillHint = id
 				local def = Config.Treadmills[id]
-				local how = if def.RequiresPass then "Get VIP in the Shop to use it." else "Buy it for $" .. Format.Number(def.Cost) .. "."
+				local how = if def.RequiresPass
+					then "Get VIP in the Shop to use it."
+					else "Buy it for $" .. Format.Number(def.Cost) .. "."
 				Network.Notify(player, def.Name .. " is locked. " .. how, "info")
 			elseif multiplier and not wasOn then
 				session.Runtime.TreadmillHint = nil
@@ -125,7 +127,11 @@ local function buildTreadmill(parent: Instance, info: MapLayout.TreadmillLayout)
 		Build.Part({
 			Name = "Post",
 			Size = Vector3.new(0.6, 4, 0.6),
-			Position = Vector3.new(info.X + side * (layout.Width / 2 + 0.6), GROUND_Y + 3, info.Z + layout.Length / 2 + 0.5),
+			Position = Vector3.new(
+				info.X + side * (layout.Width / 2 + 0.6),
+				GROUND_Y + 3,
+				info.Z + layout.Length / 2 + 0.5
+			),
 			Color = "#B0BEC5",
 			Material = Enum.Material.Metal,
 			Parent = model,
@@ -138,8 +144,13 @@ local function buildTreadmill(parent: Instance, info: MapLayout.TreadmillLayout)
 		Color = def.Color,
 		Parent = model,
 	})
-	local billboard =
-		Build.Billboard(console, def.Name .. "\nx" .. def.Multiplier .. " Speed", UDim2.fromScale(9, 2.6), Vector3.new(0, 3.6, 0), 90)
+	local billboard = Build.Billboard(
+		console,
+		def.Name .. "\nx" .. def.Multiplier .. " Speed",
+		UDim2.fromScale(9, 2.6),
+		Vector3.new(0, 3.6, 0),
+		90
+	)
 	billboard.Name = "TreadmillLabel"
 	local label = billboard:FindFirstChild("Label") :: TextLabel
 	label.TextColor3 = Build.Hex(def.Color)

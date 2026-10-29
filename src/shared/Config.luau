@@ -732,14 +732,15 @@ Config.Map = {
 --------------------------------------------------------------------------------
 Config.TreadmillOrder = { "Basic", "Bronze", "Silver", "Gold", "Diamond", "VIP" }
 
-Config.Treadmills = {
-	Basic = { Name = "Basic Treadmill", Multiplier = 2, Cost = 0, Color = "#90A4AE" },
-	Bronze = { Name = "Bronze Treadmill", Multiplier = 3, Cost = 5000, Color = "#CD7F32" },
-	Silver = { Name = "Silver Treadmill", Multiplier = 4, Cost = 1000000, Color = "#CFD8DC" },
-	Gold = { Name = "Gold Treadmill", Multiplier = 5, Cost = 250000000, Color = "#FFD54F" },
-	Diamond = { Name = "Diamond Treadmill", Multiplier = 6, Cost = 100000000000, Color = "#80DEEA" },
-	VIP = { Name = "VIP Treadmill", Multiplier = 5, Cost = 0, RequiresPass = "VIP", Color = "#B266FF" },
-} :: { [string]: { Name: string, Multiplier: number, Cost: number, Color: string, RequiresPass: string? } }
+Config.Treadmills =
+	{
+		Basic = { Name = "Basic Treadmill", Multiplier = 2, Cost = 0, Color = "#90A4AE" },
+		Bronze = { Name = "Bronze Treadmill", Multiplier = 3, Cost = 5000, Color = "#CD7F32" },
+		Silver = { Name = "Silver Treadmill", Multiplier = 4, Cost = 1000000, Color = "#CFD8DC" },
+		Gold = { Name = "Gold Treadmill", Multiplier = 5, Cost = 250000000, Color = "#FFD54F" },
+		Diamond = { Name = "Diamond Treadmill", Multiplier = 6, Cost = 100000000000, Color = "#80DEEA" },
+		VIP = { Name = "VIP Treadmill", Multiplier = 5, Cost = 0, RequiresPass = "VIP", Color = "#B266FF" },
+	} :: { [string]: { Name: string, Multiplier: number, Cost: number, Color: string, RequiresPass: string? } }
 
 Config.TreadmillLayout = {
 	RowZ = { -250, -228 }, -- two rows of three, behind the spawn and away from the runway
