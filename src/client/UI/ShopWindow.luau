@@ -19,6 +19,7 @@ local PASS_ICONS = {
 	ExtraIncubators = "🥚",
 	VIP = "👑",
 	Lucky = "🍀",
+	VIPTreadmill = "🏃",
 }
 
 function ShopWindow.Create(screen: ScreenGui, ctx: any)

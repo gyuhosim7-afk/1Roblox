@@ -159,19 +159,33 @@ MapLayout.RoadStartZ = minPlotZ - map.PlotSize / 2 - 24
 MapLayout.HomeHalfWidth = map.PlotColumnsX + map.PlotSize / 2 + 8
 MapLayout.HalfRoad = HALF_ROAD
 
--- Treadmills: in Config.TreadmillOrder, filling rows left to right.
-export type TreadmillLayout = { Id: string, X: number, Z: number }
+-- Treadmills: gym ones (Zone 0) fill the gym rows left to right in Config.TreadmillOrder;
+-- each zone's one stands at the side of the road just past that zone's gate.
+export type TreadmillLayout = { Id: string, Zone: number, X: number, Z: number }
 local treadmills: { TreadmillLayout } = {}
 do
 	local layout = Config.TreadmillLayout
-	local index = 0
+	local slots: { Point } = {}
 	for _, z in layout.RowZ do
 		for _, x in layout.ColumnX do
-			index += 1
-			local id = Config.TreadmillOrder[index]
-			if id then
-				table.insert(treadmills, { Id = id, X = x, Z = z })
-			end
+			table.insert(slots, { X = x, Z = z })
+		end
+	end
+	local gymIndex = 0
+	for _, id in Config.TreadmillOrder do
+		local def = Config.Treadmills[id]
+		if def.Zone == 0 then
+			gymIndex += 1
+			local slot = slots[gymIndex]
+			assert(slot, "more gym treadmills than gym slots")
+			table.insert(treadmills, { Id = id, Zone = 0, X = slot.X, Z = slot.Z })
+		else
+			local zone = zones[def.Zone]
+			assert(zone, "treadmill " .. id .. " is in a zone that does not exist")
+			table.insert(
+				treadmills,
+				{ Id = id, Zone = def.Zone, X = layout.ZoneX, Z = zone.GateZ + layout.ZoneGateOffset }
+			)
 		end
 	end
 end

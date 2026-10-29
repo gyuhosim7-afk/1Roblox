@@ -150,6 +150,24 @@ function Formulas.OwnsTreadmill(id: string, owned: { [string]: boolean }?, passe
 	return def.Cost <= 0 or (owned ~= nil and owned[id] == true)
 end
 
+-- Why a treadmill can't be bought with coins yet (nil = it can, if the player has the coins).
+function Formulas.TreadmillLock(id: string, speed: number, rebirths: number): string?
+	local def = Config.Treadmills[id]
+	if not def then
+		return "Unknown treadmill"
+	end
+	if def.RequiresPass then
+		return "Needs the " .. (Config.Passes :: any)[def.RequiresPass].Name .. " pass (Shop)"
+	end
+	if def.Zone > 0 and Formulas.BestZone(speed, rebirths) < def.Zone then
+		return "Reach " .. Config.Zones[def.Zone].Name .. " first"
+	end
+	if rebirths < (def.Rebirths or 0) then
+		return "Needs " .. (def.Rebirths or 0) .. " Rebirths"
+	end
+	return nil
+end
+
 -- streak is 1-based (1 = first day)
 function Formulas.DailyGems(streak: number): number
 	local list = Config.Rewards.DailyGems

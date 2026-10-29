@@ -117,7 +117,7 @@ local ownedTreadmills: { [string]: boolean } = {}
 local function bestTreadmill(): number
 	local best = 1
 	for _, id in Config.TreadmillOrder do
-		if Formulas.OwnsTreadmill(id, ownedTreadmills, { VIP = PAID }) then
+		if Formulas.OwnsTreadmill(id, ownedTreadmills, { VIPTreadmill = PAID }) then
 			best = math.max(best, Config.Treadmills[id].Multiplier)
 		end
 	end
@@ -128,7 +128,12 @@ local function buyTreadmills()
 	for _, id in Config.TreadmillOrder do
 		local def = Config.Treadmills[id]
 		-- buy when it costs at most ~1/3 of current coins (players keep money for upgrades too)
-		if not def.RequiresPass and def.Cost > 0 and not ownedTreadmills[id] and p.coins >= def.Cost * 3 then
+		if
+			def.Cost > 0
+			and not ownedTreadmills[id]
+			and not Formulas.TreadmillLock(id, p.speed, p.rebirths)
+			and p.coins >= def.Cost * 3
+		then
 			p.coins -= def.Cost
 			ownedTreadmills[id] = true
 			mark("Treadmill " .. id)

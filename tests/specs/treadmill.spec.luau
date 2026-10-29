@@ -37,14 +37,25 @@ return function(t)
 	end
 
 	describe("Treadmills", function()
-		it("lays out every treadmill in the gym without overlapping the spawn or the runway", function()
+		it("lays out gym treadmills behind the spawn and zone ones just past each gate", function()
 			local s = setup()
 			expect(#s.MapLayout.Treadmills).toBe(#s.Config.TreadmillOrder)
+			local layout = s.Config.TreadmillLayout
 			for _, info in s.MapLayout.Treadmills do
-				expect(info.Z).toBeLessThan(s.Config.Map.SpawnZ - 40)
-				expect(info.Z - s.Config.TreadmillLayout.Length / 2).toBeGreaterThan(s.MapLayout.RoadStartZ)
-				expect(math.abs(info.X) + s.Config.TreadmillLayout.Width / 2).toBeLessThan(s.Config.Map.RoadWidth / 2)
+				expect(math.abs(info.X) + layout.Width / 2).toBeLessThan(s.Config.Map.RoadWidth / 2)
 				expect(s.MapLayout.TreadmillAt(info.X, 3, info.Z)).toBe(info.Id)
+				if info.Zone == 0 then
+					expect(info.Z).toBeLessThan(s.Config.Map.SpawnZ - 40)
+					expect(info.Z - layout.Length / 2).toBeGreaterThan(s.MapLayout.RoadStartZ)
+				else
+					local zone = s.MapLayout.Zones[info.Zone]
+					-- inside the zone (past its gate), before its first guard
+					expect(s.MapLayout.ZoneAtZ(info.Z - layout.Length / 2)).toBe(info.Zone)
+					expect(info.Z - layout.Length / 2).toBeGreaterThan(zone.GateZ + 1)
+					for _, guard in zone.Guards do
+						expect(guard.Z - guard.Radius - guard.Amplitude).toBeGreaterThan(info.Z + layout.Length / 2)
+					end
+				end
 			end
 			expect(s.MapLayout.TreadmillAt(0, 3, s.Config.Map.SpawnZ)).toBeNil()
 			expect(s.MapLayout.TreadmillAt(s.MapLayout.Treadmills[1].X, 30, s.MapLayout.Treadmills[1].Z)).toBeNil()
@@ -84,7 +95,7 @@ return function(t)
 			expect(s.Network.Invoke(player, "BuyTreadmill", "Basic").ok).toBe(false)
 		end)
 
-		it("VIP treadmill needs the VIP pass and cannot be bought with coins", function()
+		it("VIP treadmill (x20) needs its own pass and cannot be bought with coins", function()
 			local s = setup()
 			local player, session = s.join(1)
 			session.Data.Coins = 1e15
@@ -92,9 +103,36 @@ return function(t)
 			local normal = s.BoostService.GetSpeedGain(player)
 			s.standOn(player, "VIP")
 			expect(s.BoostService.GetSpeedGain(player)).toBe(normal)
+			-- the plain VIP pass is not enough
 			s.BoostService.SetPass(player, "VIP", true)
 			s.world:Advance(0.3)
-			expect(s.BoostService.GetSpeedGain(player)).toBe(normal * s.Config.Treadmills.VIP.Multiplier)
+			expect(s.BoostService.GetSpeedGain(player)).toBe(normal)
+			s.BoostService.SetPass(player, "VIPTreadmill", true)
+			s.world:Advance(0.3)
+			expect(s.Config.Treadmills.VIP.Multiplier).toBe(20)
+			expect(s.BoostService.GetSpeedGain(player)).toBe(normal * 20)
+		end)
+
+		it("zone treadmills need the zone (and rebirths) before they can be bought", function()
+			local s = setup()
+			local player, session = s.join(1)
+			session.Data.Coins = 1e18
+			-- Forest needs Forest unlocked
+			session.Data.Speed = 0
+			local r = s.Network.Invoke(player, "BuyTreadmill", "Forest")
+			expect(r.ok).toBe(false)
+			session.Data.Speed = s.Config.Zones[2].GateSpeed
+			expect(s.Network.Invoke(player, "BuyTreadmill", "Forest").ok).toBe(true)
+			expect(session.Data.Coins).toBe(1e18 - s.Config.Treadmills.Forest.Cost)
+			-- Volcano Mill also needs a rebirth
+			session.Data.Speed = s.Config.Zones[5].GateSpeed
+			expect(s.Network.Invoke(player, "BuyTreadmill", "Volcano").ok).toBe(false)
+			session.Data.Rebirths = 1
+			expect(s.Network.Invoke(player, "BuyTreadmill", "Volcano").ok).toBe(true)
+			-- standing on it multiplies speed gain
+			local normal = s.BoostService.GetSpeedGain(player)
+			s.standOn(player, "Volcano")
+			expect(s.BoostService.GetSpeedGain(player)).toBe(normal * s.Config.Treadmills.Volcano.Multiplier)
 		end)
 
 		it("gives no bonus while carrying an egg", function()

@@ -102,7 +102,12 @@ local function refreshLabels(state: any)
 			local billboard = console and console:FindFirstChild("TreadmillLabel")
 			local label = billboard and billboard:FindFirstChild("Label") :: TextLabel?
 			if label then
-				local lockText = if def.RequiresPass then "VIP only" else "$" .. Format.Number(def.Cost)
+				local lockText = if def.RequiresPass
+					then "Pass only"
+					elseif def.Rebirths and (state.Data.Rebirths or 0) < def.Rebirths then "$" .. Format.Number(
+						def.Cost
+					) .. " + " .. def.Rebirths .. " Rebirths"
+					else "$" .. Format.Number(def.Cost)
 				label.Text = def.Name
 					.. "\nx"
 					.. def.Multiplier

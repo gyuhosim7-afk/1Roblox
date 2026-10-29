@@ -46,8 +46,9 @@ function TreadmillService.Buy(player: Player, payload: any): (boolean, string?)
 	if TreadmillService.Owns(player, id) then
 		return false, "You already own this treadmill!"
 	end
-	if def.RequiresPass then
-		return false, "Needs the " .. (Config.Passes :: any)[def.RequiresPass].Name .. " pass (Shop)"
+	local lock = Formulas.TreadmillLock(id, session.Data.Speed, session.Data.Rebirths)
+	if lock then
+		return false, lock
 	end
 	if session.Data.Coins < def.Cost then
 		return false, "Not enough coins (need $" .. Format.Number(def.Cost) .. ")"
@@ -81,10 +82,9 @@ function TreadmillService.Tick()
 			if id and not multiplier and session.Runtime.TreadmillHint ~= id then
 				session.Runtime.TreadmillHint = id
 				local def = Config.Treadmills[id]
-				local how = if def.RequiresPass
-					then "Get VIP in the Shop to use it."
-					else "Buy it for $" .. Format.Number(def.Cost) .. "."
-				Network.Notify(player, def.Name .. " is locked. " .. how, "info")
+				local how = Formulas.TreadmillLock(id, session.Data.Speed, session.Data.Rebirths)
+					or ("Buy it for $" .. Format.Number(def.Cost))
+				Network.Notify(player, def.Name .. " is locked. " .. how .. ".", "info")
 			elseif multiplier and not wasOn then
 				session.Runtime.TreadmillHint = nil
 			end

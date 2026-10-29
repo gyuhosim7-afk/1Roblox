@@ -727,24 +727,72 @@ Config.Map = {
 }
 
 --------------------------------------------------------------------------------
--- Treadmills (gym behind the spawn). Standing on an owned treadmill multiplies Speed gain.
--- Bought once with coins (kept after rebirth). VIP treadmill needs the VIP pass.
+-- Treadmills. Standing on an owned treadmill multiplies Speed gain.
+-- Zone = 0: the gym behind the spawn. Zone = 1..7: one treadmill just past that zone's gate
+-- (buying it needs that zone unlocked and Rebirths rebirths). Bought once with coins, kept after
+-- rebirth. RequiresPass treadmills can't be bought with coins.
 --------------------------------------------------------------------------------
-Config.TreadmillOrder = { "Basic", "Bronze", "Silver", "Gold", "Diamond", "VIP" }
+export type TreadmillDef = {
+	Name: string,
+	Multiplier: number,
+	Cost: number,
+	Color: string,
+	Zone: number,
+	Rebirths: number?,
+	RequiresPass: string?,
+}
 
-Config.Treadmills =
-	{
-		Basic = { Name = "Basic Treadmill", Multiplier = 2, Cost = 0, Color = "#90A4AE" },
-		Bronze = { Name = "Bronze Treadmill", Multiplier = 3, Cost = 5000, Color = "#CD7F32" },
-		Silver = { Name = "Silver Treadmill", Multiplier = 4, Cost = 1000000, Color = "#CFD8DC" },
-		Gold = { Name = "Gold Treadmill", Multiplier = 5, Cost = 250000000, Color = "#FFD54F" },
-		Diamond = { Name = "Diamond Treadmill", Multiplier = 6, Cost = 100000000000, Color = "#80DEEA" },
-		VIP = { Name = "VIP Treadmill", Multiplier = 5, Cost = 0, RequiresPass = "VIP", Color = "#B266FF" },
-	} :: { [string]: { Name: string, Multiplier: number, Cost: number, Color: string, RequiresPass: string? } }
+Config.TreadmillOrder = {
+	"Basic",
+	"Bronze",
+	"Silver",
+	"Gold",
+	"Diamond",
+	"VIP",
+	"Meadow",
+	"Forest",
+	"Desert",
+	"Snow",
+	"Volcano",
+	"Crystal",
+	"Void",
+}
+
+Config.Treadmills = {
+	Basic = { Name = "Basic Treadmill", Multiplier = 2, Cost = 0, Color = "#90A4AE", Zone = 0 },
+	Bronze = { Name = "Bronze Treadmill", Multiplier = 3, Cost = 5000, Color = "#CD7F32", Zone = 0 },
+	Silver = { Name = "Silver Treadmill", Multiplier = 4, Cost = 1000000, Color = "#CFD8DC", Zone = 0 },
+	Gold = { Name = "Gold Treadmill", Multiplier = 5, Cost = 250000000, Color = "#FFD54F", Zone = 0 },
+	Diamond = { Name = "Diamond Treadmill", Multiplier = 6, Cost = 100000000000, Color = "#80DEEA", Zone = 0 },
+	VIP = {
+		Name = "VIP Treadmill",
+		Multiplier = 20,
+		Cost = 0,
+		RequiresPass = "VIPTreadmill",
+		Color = "#B266FF",
+		Zone = 0,
+	},
+	Meadow = { Name = "Meadow Mill", Multiplier = 3, Cost = 5000, Color = "#B8F2A0", Zone = 1 },
+	Forest = { Name = "Forest Mill", Multiplier = 5, Cost = 500000, Color = "#7BC86C", Zone = 2 },
+	Desert = { Name = "Desert Mill", Multiplier = 8, Cost = 50000000, Color = "#F2D49B", Zone = 3 },
+	Snow = { Name = "Frost Mill", Multiplier = 10, Cost = 2000000000, Color = "#9BD3F5", Zone = 4 },
+	Volcano = { Name = "Magma Mill", Multiplier = 15, Cost = 100000000000, Color = "#FF5722", Zone = 5, Rebirths = 1 },
+	Crystal = {
+		Name = "Crystal Mill",
+		Multiplier = 25,
+		Cost = 2000000000000,
+		Color = "#CE93D8",
+		Zone = 6,
+		Rebirths = 2,
+	},
+	Void = { Name = "Void Mill", Multiplier = 40, Cost = 100000000000000, Color = "#B388FF", Zone = 7, Rebirths = 3 },
+} :: { [string]: TreadmillDef }
 
 Config.TreadmillLayout = {
-	RowZ = { -250, -228 }, -- two rows of three, behind the spawn and away from the runway
+	RowZ = { -250, -228 }, -- gym: two rows of three, behind the spawn and away from the runway
 	ColumnX = { -18, 0, 18 },
+	ZoneX = -22, -- zone treadmills: at the left side of the road...
+	ZoneGateOffset = 11, -- ...this far past the gate (before the zone's first guard)
 	Width = 8, -- belt size (x)
 	Length = 12, -- belt size (z)
 	MaxStandHeight = 8, -- studs above the belt that still count as standing on it
@@ -835,9 +883,15 @@ Config.Passes = {
 		Description = "Permanent Luck x1.5: Rare+ slimes and mutations are 1.5x more likely. Check the odds in the Index.",
 		RandomItemModifier = true,
 	},
+	VIPTreadmill = {
+		Id = 0,
+		Price = 199,
+		Name = "VIP Treadmill",
+		Description = "Use the golden x20 treadmill in the gym: 20x Speed gain while you run on it.",
+	},
 }
 
-Config.PassOrder = { "DoubleCoins", "DoubleSpeed", "AutoCollect", "ExtraIncubators", "VIP", "Lucky" }
+Config.PassOrder = { "DoubleCoins", "DoubleSpeed", "VIPTreadmill", "AutoCollect", "ExtraIncubators", "VIP", "Lucky" }
 
 Config.ExtraIncubatorsFromPass = 2
 
