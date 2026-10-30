@@ -8,6 +8,7 @@ local Format = require(Shared.Format)
 local Formulas = require(Shared.Formulas)
 local MapLayout = require(Shared.MapLayout)
 local Build = require(Shared.Build)
+local MeshLibrary = require(Shared.MeshLibrary)
 local Validate = require(script.Parent.Parent.Logic.Validate)
 local PlayerService = require(script.Parent.PlayerService)
 local MapService = require(script.Parent.MapService)
@@ -144,6 +145,56 @@ local function buildTreadmill(parent: Instance, info: MapLayout.TreadmillLayout)
 		Color = def.Color,
 		Parent = model,
 	})
+
+	-- AI-made treadmill mesh (frame, belt, handrails, screen) on a glowing tier-colored pad.
+	-- The part-built frame above stays as the fallback when the mesh isn't loaded (tests, failures).
+	local mesh = MeshLibrary.Place(
+		"Treadmill",
+		Vector3.new(layout.Width + 1, 7, layout.Length + 1),
+		CFrame.new(info.X, GROUND_Y + 0.3, info.Z),
+		model
+	)
+	if mesh then
+		-- stretch to the belt footprint (the generated mesh is narrower than our belts)
+		-- the mesh's screen end faces -Z; turn it so the screen sits at +Z like the console
+		mesh.Size = Vector3.new(layout.Width + 1, 9, layout.Length + 1)
+		mesh.CFrame = CFrame.new(info.X, GROUND_Y + 0.3 + 4.5, info.Z) * CFrame.Angles(0, math.pi, 0)
+		mesh.Name = "Frame"
+		for _, child in model:GetChildren() do
+			if child.Name == "Post" or child.Name == "Rail" then
+				child:Destroy()
+			end
+		end
+		base.Transparency = 1
+		base.CanCollide = false
+		belt.Position = Vector3.new(info.X, GROUND_Y + 1.75, info.Z)
+		belt.Transparency = 0.15
+		console.Transparency = 1
+		console.CanCollide = false
+		console.Position = Vector3.new(info.X, GROUND_Y + 8, info.Z + layout.Length / 2)
+		local pad = Build.Part({
+			Name = "Glow",
+			Size = Vector3.new(layout.Width + 4, 0.3, layout.Length + 4),
+			Position = Vector3.new(info.X, GROUND_Y + 0.15, info.Z),
+			Color = def.Color,
+			Material = Enum.Material.Neon,
+			Parent = model,
+		})
+		pad.CanCollide = false
+		pad.Transparency = 0.25
+		for _, side in { -1, 1 } do
+			local strip = Build.Part({
+				Name = "Rail",
+				Size = Vector3.new(0.35, 0.35, layout.Length),
+				Position = Vector3.new(info.X + side * (layout.Width / 2 + 0.2), GROUND_Y + 1.85, info.Z),
+				Color = def.Color,
+				Material = Enum.Material.Neon,
+				Parent = model,
+			})
+			strip.CanCollide = false
+		end
+	end
+
 	local billboard = Build.Billboard(
 		console,
 		def.Name .. "\nx" .. def.Multiplier .. " Speed",

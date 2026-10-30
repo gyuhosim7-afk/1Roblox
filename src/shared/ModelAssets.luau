@@ -69,6 +69,7 @@ local ModelAssets: { [string]: Entry } = {
 	SphinxSlime = { Mesh = "rbxassetid://92690911905387", Texture = "rbxassetid://81366498779896" },
 	StarlightSlime = { Mesh = "rbxassetid://100726471903681", Texture = "rbxassetid://102948197720745" },
 	SunnySlime = { Mesh = "rbxassetid://136176062995685", Texture = "rbxassetid://102259474737205" },
+	Treadmill = { Mesh = "rbxassetid://121697805416411", Texture = "rbxassetid://130825664863993" },
 	TreantSlime = { Mesh = "rbxassetid://140295518308242", Texture = "rbxassetid://101243185346405" },
 	YetiSlime = { Mesh = "rbxassetid://140161364013263", Texture = "rbxassetid://70803263487744" },
 }
