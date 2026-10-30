@@ -52,19 +52,28 @@ function MonetizationService.IsRestricted(player: Player): boolean
 	return restricted == true
 end
 
+-- Player-to-player trading is allowed only when Roblox's policy says so (unknown = not allowed).
+function MonetizationService.CanTrade(player: Player): boolean
+	local session = PlayerService.Get(player)
+	return session ~= nil and session.Runtime.TradingAllowed == true
+end
+
 local function loadPolicy(player: Player, session: PlayerService.Session)
 	local restricted = true
+	local tradingAllowed = false
 	for _ = 1, 3 do
 		local ok, result = pcall(function()
 			return PolicyService:GetPolicyInfoForPlayerAsync(player)
 		end)
 		if ok and type(result) == "table" then
 			restricted = result.ArePaidRandomItemsRestricted == true
+			tradingAllowed = result.IsPaidItemTradingAllowed == true
 			break
 		end
 		task.wait(1)
 	end
 	session.Runtime.Restricted = restricted
+	session.Runtime.TradingAllowed = tradingAllowed
 	PlayerService.MarkDirty(player, true)
 end
 

@@ -7,6 +7,8 @@ ProfileSchema.Version = 1
 
 export type SlimeRecord = { Id: string, Kind: string, Mutation: string, Locked: boolean }
 export type EggRecord = { Slot: number, Egg: string, HatchAt: number, Duration: number }
+-- One finished trade. Gave/Got hold "Kind/Mutation" strings.
+export type TradeEntry = { With: string, UserId: number, Gave: { string }, Got: { string }, At: number }
 
 export type Data = {
 	SchemaVersion: number,
@@ -34,6 +36,7 @@ export type Data = {
 		TimesRobbed: number,
 		Joins: number,
 		RobuxSpent: number,
+		Trades: number,
 	},
 	TutorialStep: number,
 	CreatedAt: number,
@@ -42,6 +45,7 @@ export type Data = {
 	PurchaseOrder: { string },
 	PassCache: { [string]: boolean },
 	Treadmills: { [string]: boolean },
+	TradeLog: { TradeEntry },
 }
 
 function ProfileSchema.Default(now: number): Data
@@ -71,6 +75,7 @@ function ProfileSchema.Default(now: number): Data
 			TimesRobbed = 0,
 			Joins = 0,
 			RobuxSpent = 0,
+			Trades = 0,
 		},
 		TutorialStep = 1,
 		CreatedAt = now,
@@ -79,6 +84,7 @@ function ProfileSchema.Default(now: number): Data
 		PurchaseOrder = {},
 		PassCache = {},
 		Treadmills = {},
+		TradeLog = {},
 	}
 end
 
@@ -207,6 +213,17 @@ function ProfileSchema.Reconcile(
 		end
 	end
 	data.Eggs = eggs
+
+	-- Trade history (newest last)
+	local log: { TradeEntry } = {}
+	if type(data.TradeLog) == "table" then
+		for _, entry in data.TradeLog do
+			if type(entry) == "table" and type(entry.Gave) == "table" and type(entry.Got) == "table" then
+				table.insert(log, entry)
+			end
+		end
+	end
+	data.TradeLog = log
 
 	-- Migrations go here: if data.SchemaVersion < 2 then ... end
 	data.SchemaVersion = ProfileSchema.Version

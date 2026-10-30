@@ -64,7 +64,7 @@ Config.UpgradeOrder = { "Training", "Pedestals", "Incubators", "Lock" }
 -- requirement(r) = Base * Growth ^ r   (r = current rebirths)
 --------------------------------------------------------------------------------
 Config.Rebirth = {
-	SpeedBase = 25000,
+	SpeedBase = 60000,
 	SpeedGrowth = 3,
 	CoinBase = 50000000,
 	CoinGrowth = 10,
@@ -615,7 +615,7 @@ Config.Zones = {
 		Id = "Snow",
 		Name = "Snowy Peaks",
 		Egg = "Snow",
-		GateSpeed = 5000,
+		GateSpeed = 10000,
 		RebirthsRequired = 0,
 		Length = 640,
 		GroundColor = "#EEF5FB",
@@ -639,7 +639,7 @@ Config.Zones = {
 		Id = "Volcano",
 		Name = "Volcano",
 		Egg = "Magma",
-		GateSpeed = 25000,
+		GateSpeed = 75000,
 		RebirthsRequired = 0,
 		Length = 800,
 		GroundColor = "#3A2E2E",
@@ -663,7 +663,7 @@ Config.Zones = {
 		Id = "Crystal",
 		Name = "Crystal Cave",
 		Egg = "Crystal",
-		GateSpeed = 400000,
+		GateSpeed = 2000000,
 		RebirthsRequired = 0,
 		Length = 960,
 		GroundColor = "#4A3B63",
@@ -687,8 +687,8 @@ Config.Zones = {
 		Id = "Void",
 		Name = "The Void",
 		Egg = "Void",
-		GateSpeed = 5000000,
-		RebirthsRequired = 3,
+		GateSpeed = 25000000,
+		RebirthsRequired = 4,
 		Length = 1120,
 		GroundColor = "#140C24",
 		AccentColor = "#B388FF",
@@ -972,6 +972,20 @@ Config.Network = {
 --------------------------------------------------------------------------------
 -- UI icons (AI-generated for this game, uploaded with Studio; source PNGs in assets/icons)
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Trading (player <-> player slime trades, Adopt Me style)
+-- Request -> both add slimes -> both Accept -> short wait -> both Confirm -> swap.
+-- Any change to an offer clears both accepts. Players whose Roblox policy says
+-- IsPaidItemTradingAllowed = false (or whose lookup failed) can't trade.
+--------------------------------------------------------------------------------
+Config.Trading = {
+	MaxItems = 9, -- slimes per side
+	RequestSeconds = 30, -- a trade request expires after this
+	RequestCooldown = 5, -- seconds before you can ask the same player again
+	ConfirmDelay = 5, -- seconds both must look at the final trade before Confirm works
+	LogSize = 20, -- trades kept in the player's history
+}
+
 Config.Icons = {
 	Shop = "rbxassetid://82660667329425",
 	Rebirth = "rbxassetid://88478267932384",

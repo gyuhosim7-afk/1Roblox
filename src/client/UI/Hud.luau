@@ -197,7 +197,7 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	local rewards = Instance.new("Frame")
 	rewards.Name = "Rewards"
 	rewards.BackgroundTransparency = 1
-	rewards.Size = UDim2.fromOffset(196, 80)
+	rewards.Size = UDim2.fromOffset(296, 80)
 	rewards.Position = UDim2.new(1, -12, 0, 6)
 	rewards.AnchorPoint = Vector2.new(1, 0)
 	rewards.Parent = screen
@@ -210,6 +210,12 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	refs.Daily = tile(rewards, "Daily", "DAILY", "Egg", Color3.fromRGB(255, 160, 40), actions.ClaimDaily, 1)
 	refs.Daily.Size = UDim2.fromOffset(92, 78)
 	refs.DailyBadge = Theme.Badge(refs.Daily, "1")
+	refs.Trade = tile(rewards, "Trade", "TRADE", "Slime", Color3.fromRGB(40, 190, 170), function()
+		actions.OpenWindow("Trade")
+	end, 3)
+	refs.Trade.Size = UDim2.fromOffset(92, 78)
+	refs.TradeBadge = Theme.Badge(refs.Trade, "1")
+	refs.TradeBadge.Parent.Visible = false
 
 	-- Bottom center: speed + progress to the next gate.
 	local bottom = Instance.new("Frame")
@@ -348,6 +354,14 @@ function Hud.Update(state: any)
 	refs.PerSecond.Text = "+" .. Format.Number(state.SpeedPerSecond or 1) .. "/s"
 	refs.Coins.Text = Format.Number(math.floor(data.Coins))
 	refs.Gems.Text = Format.Number(math.floor(data.Gems))
+	if state.TradeRequests then
+		local waiting = #state.TradeRequests
+		refs.TradeBadge.Text = tostring(waiting)
+		refs.TradeBadge.Parent.Visible = waiting > 0 or state.Trade ~= nil
+		if state.Trade then
+			refs.TradeBadge.Text = "!"
+		end
+	end
 
 	local zone, needSpeed, needRebirths = nextGoal(data)
 	local fraction = 1

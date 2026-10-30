@@ -17,6 +17,7 @@ local UpgradeWindow = require(UI.UpgradeWindow)
 local InventoryWindow = require(UI.InventoryWindow)
 local IndexWindow = require(UI.IndexWindow)
 local RebirthWindow = require(UI.RebirthWindow)
+local TradeWindow = require(UI.TradeWindow)
 local StateController = require(script.Parent.StateController)
 
 local UIController = {}
@@ -37,9 +38,17 @@ function UIController.Close()
 	openName = nil
 end
 
-function UIController.Open(name: string)
+-- keepOpen = true: never toggles an already open window closed (used when a trade starts).
+function UIController.Open(name: string, keepOpen: boolean?)
 	local entry = windows[name]
 	if not entry then
+		return
+	end
+	if openName == name and keepOpen then
+		local state = StateController.State
+		if state then
+			entry.Refresh(state)
+		end
 		return
 	end
 	if openName == name then
@@ -110,6 +119,9 @@ function UIController.Init()
 	local ctx = {
 		Close = UIController.Close,
 		Open = UIController.Open,
+		State = function(): any
+			return StateController.State
+		end,
 		Request = function(action: string, payload: any?)
 			task.spawn(StateController.Request, action, payload)
 		end,
@@ -141,6 +153,7 @@ function UIController.Init()
 	windows.Slimes = InventoryWindow.Create(screen, ctx)
 	windows.Index = IndexWindow.Create(screen, ctx)
 	windows.Rebirth = RebirthWindow.Create(screen, ctx)
+	windows.Trade = TradeWindow.Create(screen, ctx)
 
 	StateController.Notify:Connect(function(text: string, kind: string)
 		Toasts.Show(text, kind)
@@ -165,12 +178,13 @@ function UIController.Start()
 	local announcedDaily = false
 	StateController.StatsChanged:Connect(function(state: any)
 		Hud.Update(state)
-		if openName and openName ~= "Slimes" and openName ~= "Index" then
+		if openName and openName ~= "Slimes" and openName ~= "Index" and openName ~= "Trade" then
 			refreshOpenWindow()
 		end
 	end)
 	StateController.Changed:Connect(function(state: any)
 		Hud.Update(state)
+		windows.Trade.OnState(state)
 		refreshOpenWindow()
 		if not announcedDaily and state.Daily and state.Daily.Available then
 			announcedDaily = true

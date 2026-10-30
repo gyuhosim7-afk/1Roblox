@@ -318,6 +318,7 @@ local WINDOW_ICONS: { [string]: string } = {
 	Slimes = "Slime",
 	["Index & Odds"] = "Index",
 	Rebirth = "Rebirth",
+	Trade = "Slime",
 }
 
 export type Window = {
