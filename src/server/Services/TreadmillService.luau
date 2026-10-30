@@ -197,7 +197,7 @@ local function buildTreadmill(parent: Instance, info: MapLayout.TreadmillLayout)
 
 	local billboard = Build.Billboard(
 		console,
-		def.Name .. "\nx" .. def.Multiplier .. " Speed",
+		def.Name .. "\n" .. def.Texture.Name .. " · x" .. def.Multiplier .. " Speed",
 		UDim2.fromScale(9, 2.6),
 		Vector3.new(0, 3.6, 0),
 		90

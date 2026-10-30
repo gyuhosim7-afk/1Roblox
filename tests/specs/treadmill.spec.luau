@@ -175,7 +175,7 @@ return function(t)
 			expect(bronze.Console.BuyPrompt.Enabled).toBe(false)
 			expect(bronze.Console.TreadmillLabel.Label.Text:find("🔒")).toBeNil()
 			-- belt stripes animate
-			expect(#bronze.Belt:GetChildren()).toBeGreaterThan(0)
+			expect(#bronze.Belt:GetChildren()).toBeGreaterThan(0) -- texture blobs
 		end)
 	end)
 end

@@ -90,6 +90,8 @@
 
 - 시뮬레이션은 부화를 기다리는 동안 가장 좋은 러닝머신을 쓴다고 가정함 (위 5번 결과에 포함).
 
+- **러닝머신 촉감**: 벨트 위에 촉감 재료가 굴러가고, 달리면 그 재료 소리(말랑/바삭)가 남. 좋은 러닝머신일수록 더 인기 있는 재료 (2026년 한국 촉감 완구 유행 조사: 왁뿌볼이 최고 유행, 그다음 버터·크런치류). 1 Classic Slime(Basic) → Jelly Squishy(Bronze) → Cloud Slime(Meadow) → Mochi Squishy(Silver) → Keycap Squishy(Gold) → Potato Squishy(Forest) → Cheese Squishy(Diamond) → Soap Crunch(Desert) → Water Butter(Snow) → Crunchy Slime(Volcano) → Butter Squishy(VIP) → Butter Crunch(Crystal) → 13 Wax Crush Ball 왁뿌볼(Void). 소리는 로블록스 공식 라이선스 효과음(Pro Sound Effects).
+
 ## 5-2. 거래 (입양하세요 스타일)
 - 오른쪽 위 **TRADE** 버튼 → 같은 서버의 플레이어에게 거래 신청 → 상대 화면에 "OO wants to trade!" 알림(수락/거절).
 - 거래 화면: 내 제안 / 상대 제안 (각자 슬라임 최대 9마리, 초당 수입 합계 표시). 내 슬라임을 눌러 올리고, 올린 걸 누르면 내림.

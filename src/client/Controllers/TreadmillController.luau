@@ -1,11 +1,13 @@
 --!strict
--- Treadmill visuals: moving belt stripes, the character runs in place while on an owned
+-- Treadmill visuals: the belt carries blobs of its satisfying texture (slime, squishy, butter,
+-- 왁뿌볼...) that squish or crunch under your feet, the character runs in place while on an owned
 -- treadmill, and labels / buy prompts show what this player owns. Speed is decided on the server.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared.Config)
@@ -16,49 +18,111 @@ local StateController = require(script.Parent.StateController)
 local TreadmillController = {}
 
 local player = Players.LocalPlayer
-local STRIPES = 4
+local ROWS = 6 -- blob rows riding the belt
+local PER_ROW = 3
 local BELT_SPEED = 6 -- studs per second (visual only)
+local ANIMATE_DISTANCE = 140 -- only animate belts this close to the camera
+local STEP_SECONDS = 0.32 -- one squish / crunch per footstep while running
 
-type Belt = { Part: BasePart, Stripes: { BasePart } }
+type Blob = { Part: BasePart, Offset: number, X: number }
+type Belt = { Part: BasePart, Blobs: { Blob } }
 local belts: { Belt } = {}
 local runTrack: AnimationTrack? = nil
+
+-- Mesh shape and size (x, y, z as a fraction of a blob cell) for each kind of texture.
+local SHAPES: { [string]: { Mesh: Enum.MeshType, Scale: Vector3, Transparency: number } } = {
+	Slime = { Mesh = Enum.MeshType.Sphere, Scale = Vector3.new(0.95, 0.25, 0.85), Transparency = 0.2 },
+	Squishy = { Mesh = Enum.MeshType.Sphere, Scale = Vector3.new(0.8, 0.55, 0.8), Transparency = 0 },
+	Crunch = { Mesh = Enum.MeshType.Sphere, Scale = Vector3.new(0.85, 0.4, 0.85), Transparency = 0 },
+	Click = { Mesh = Enum.MeshType.Brick, Scale = Vector3.new(0.75, 0.35, 0.75), Transparency = 0 },
+	Wax = { Mesh = Enum.MeshType.Sphere, Scale = Vector3.new(0.8, 0.8, 0.8), Transparency = 0 },
+}
 
 local function addBelt(part: Instance)
 	if not part:IsA("BasePart") then
 		return
 	end
-	local stripes: { BasePart } = {}
-	for i = 1, STRIPES do
-		local stripe = Instance.new("Part")
-		stripe.Name = "BeltStripe"
-		stripe.Anchored = true
-		stripe.CanCollide = false
-		stripe.CanQuery = false
-		stripe.CanTouch = false
-		stripe.CastShadow = false
-		stripe.Material = Enum.Material.Neon
-		stripe.Color = Color3.fromRGB(255, 255, 255)
-		stripe.Transparency = 0.6
-		stripe.Size = Vector3.new(part.Size.X - 0.4, 0.05, 0.5)
-		stripe:SetAttribute("Offset", (i - 1) / STRIPES)
-		stripe.Parent = part
-		table.insert(stripes, stripe)
+	local id = part:GetAttribute("TreadmillId")
+	local def = if type(id) == "string" then Config.Treadmills[id] else nil
+	if not def then
+		return
 	end
-	table.insert(belts, { Part = part, Stripes = stripes })
+	local texture = def.Texture
+	local shape = SHAPES[texture.Kind] or SHAPES.Squishy
+	local material = (Enum.Material :: any)[texture.Material] or Enum.Material.SmoothPlastic
+	local cell = math.min((part.Size.X - 0.6) / PER_ROW, part.Size.Z / ROWS)
+	local blobs: { Blob } = {}
+	for row = 1, ROWS do
+		for column = 1, PER_ROW do
+			local blob = Instance.new("Part")
+			blob.Name = "Blob"
+			blob.Anchored = true
+			blob.CanCollide = false
+			blob.CanQuery = false
+			blob.CanTouch = false
+			blob.CastShadow = false
+			blob.Size = Vector3.new(cell, cell, cell)
+			blob.Material = material
+			blob.Transparency = shape.Transparency
+			-- every few blobs uses the accent color, like the swirl in a butter or wax ball
+			local accent = (row + column) % 3 == 0
+			blob.Color = Color3.fromHex(if accent then texture.Accent else texture.Base)
+			local mesh = Instance.new("SpecialMesh")
+			mesh.MeshType = shape.Mesh
+			mesh.Scale = shape.Scale
+			mesh.Parent = blob
+			blob.Parent = part
+			local x = (column - (PER_ROW + 1) / 2) * cell
+			table.insert(blobs, { Part = blob :: BasePart, Offset = (row - 1) / ROWS, X = x })
+		end
+	end
+	table.insert(belts, { Part = part, Blobs = blobs })
 end
 
 local function animateBelts(t: number)
+	local camera = workspace.CurrentCamera
+	local eye = if camera then camera.CFrame.Position else Vector3.zero
 	for _, belt in belts do
 		local part = belt.Part
-		local length = part.Size.Z
-		for _, stripe in belt.Stripes do
-			local offset = (stripe:GetAttribute("Offset") :: number?) or 0
-			-- stripes travel toward -Z (runners face +Z, toward the console)
-			local u = ((t * BELT_SPEED / length) + offset) % 1
-			local z = length / 2 - u * length
-			stripe.CFrame = part.CFrame * CFrame.new(0, part.Size.Y / 2 + 0.03, z)
+		if (part.Position - eye).Magnitude <= ANIMATE_DISTANCE then
+			local length = part.Size.Z
+			for _, blob in belt.Blobs do
+				-- blobs travel toward -Z (runners face +Z, toward the console)
+				local u = ((t * BELT_SPEED / length) + blob.Offset) % 1
+				local z = length / 2 - u * length
+				local lift = part.Size.Y / 2 + blob.Part.Size.Y * 0.15
+				blob.Part.CFrame = part.CFrame * CFrame.new(blob.X, lift, z)
+			end
 		end
 	end
+end
+
+-- Footstep sounds of the texture under you (only you hear your own treadmill).
+local stepSounds: { Sound } = {}
+local nextSound = 1
+local stepTexture: Config.TreadmillTexture? = nil
+local lastStep = 0
+
+local function playStep()
+	local texture = stepTexture
+	if not texture then
+		return
+	end
+	local sound: Sound? = stepSounds[nextSound]
+	if not sound then
+		local created = Instance.new("Sound")
+		created.Name = "TreadmillStep"
+		created.Parent = SoundService
+		stepSounds[nextSound] = created
+		sound = created
+	end
+	assert(sound, "step sound")
+	nextSound = nextSound % 3 + 1
+	sound.SoundId = texture.Sound
+	sound.Volume = texture.Volume
+	sound.PlaybackSpeed = texture.Pitch * (0.94 + math.random() * 0.12)
+	sound.TimePosition = 0
+	sound:Play()
 end
 
 local function setRunning(on: boolean)
@@ -109,7 +173,9 @@ local function refreshLabels(state: any)
 					) .. " + " .. def.Rebirths .. " Rebirths"
 					else "$" .. Format.Number(def.Cost)
 				label.Text = def.Name
-					.. "\nx"
+					.. "\n"
+					.. def.Texture.Name
+					.. " · x"
 					.. def.Multiplier
 					.. " Speed"
 					.. (if mine then "" else "  🔒 " .. lockText)
@@ -131,11 +197,20 @@ end
 
 function TreadmillController.Start()
 	RunService.RenderStepped:Connect(function()
-		animateBelts(os.clock())
+		local now = os.clock()
+		animateBelts(now)
+		if stepTexture and now - lastStep >= STEP_SECONDS then
+			lastStep = now
+			playStep()
+		end
 	end)
 	StateController.Changed:Connect(function(state: any)
 		refreshLabels(state)
-		setRunning((state.TreadmillMultiplier or 1) > 1)
+		local running = (state.TreadmillMultiplier or 1) > 1
+		setRunning(running)
+		local on = state.TreadmillOn
+		local def = if running and type(on) == "string" then Config.Treadmills[on] else nil
+		stepTexture = if def then def.Texture else nil
 	end)
 	player.CharacterAdded:Connect(function()
 		runTrack = nil
