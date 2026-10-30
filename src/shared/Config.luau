@@ -61,16 +61,30 @@ Config.UpgradeOrder = { "Training", "Pedestals", "Incubators", "Lock" }
 
 --------------------------------------------------------------------------------
 -- Rebirth: resets Speed, Coins and Speed Training. Keeps slimes, base upgrades, gems.
--- requirement(r) = Base * Growth ^ r   (r = current rebirths)
+-- requirement(r) = Base * Growth ^ min(r, LateFrom) * LateGrowth ^ max(0, r - LateFrom)
+-- (r = current rebirths). After the Void (rebirth 4) requirements grow more gently so the
+-- endgame climb to MaxRebirths takes days instead of hitting a wall.
 --------------------------------------------------------------------------------
 Config.Rebirth = {
 	SpeedBase = 60000,
 	SpeedGrowth = 3,
 	CoinBase = 50000000,
 	CoinGrowth = 10,
+	LateFrom = 4,
+	SpeedGrowthLate = 1.05,
+	CoinGrowthLate = 1.2,
+	MaxRebirths = 15,
 	SpeedBonusPerRebirth = 0.5, -- +50% speed gain per rebirth
 	CoinBonusPerRebirth = 0.25, -- +25% coins per rebirth
 	GemReward = 50,
+	-- Extra rewards when reaching these rebirths. Luck adds up (+10% = 1.1x luck) and shows in the odds.
+	Milestones = {
+		[5] = { Title = "Void Walker", Gems = 500, Luck = 0.1 },
+		[8] = { Title = "Slime Tycoon", Gems = 1000, Luck = 0.1 },
+		[10] = { Title = "Speed Demon", Gems = 2000, Luck = 0.15 },
+		[12] = { Title = "Slime Legend", Gems = 3500, Luck = 0.15 },
+		[15] = { Title = "MAX REBIRTH", Gems = 10000, Luck = 0.25 },
+	} :: { [number]: { Title: string, Gems: number, Luck: number } },
 }
 
 --------------------------------------------------------------------------------

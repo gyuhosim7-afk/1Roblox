@@ -180,9 +180,13 @@ local function buyUpgrades()
 end
 
 local function tryRebirth()
+	if p.rebirths >= Config.Rebirth.MaxRebirths then
+		return
+	end
 	local speedReq, coinReq = Formulas.RebirthRequirement(p.rebirths)
 	if p.speed >= speedReq and p.coins >= coinReq then
 		p.rebirths += 1
+		mods.Rebirths = p.rebirths
 		p.speed = 0
 		p.coins = 0
 		p.training = 0

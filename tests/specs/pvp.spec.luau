@@ -155,6 +155,42 @@ return function(t)
 			local speed2 = s.Formulas.RebirthRequirement(1)
 			expect(speed2).toBeGreaterThan(speedReq)
 		end)
+
+		it("milestone rebirths give a title, bonus gems and luck; max rebirth stops further rebirths", function()
+			local s = setup()
+			local player, session = s.join(1)
+			local BoostService = s.world:Require("ServerScriptService/Server/Services/BoostService")
+			local rebirth = s.Config.Rebirth
+			local function rebirthFrom(r)
+				session.Data.Rebirths = r
+				local speedReq, coinReq = s.Formulas.RebirthRequirement(r)
+				session.Data.Speed, session.Data.Coins = speedReq, coinReq
+				return s.Network.Invoke(player, "Rebirth")
+			end
+			-- requirements always rise, but gently after the Void
+			for r = 1, rebirth.MaxRebirths - 1 do
+				local a, ca = s.Formulas.RebirthRequirement(r - 1)
+				local b, cb = s.Formulas.RebirthRequirement(r)
+				expect(b).toBeGreaterThan(a)
+				expect(cb).toBeGreaterThan(ca)
+			end
+			local luckBefore = BoostService.GetLuck(player)
+			local gems = session.Data.Gems
+			expect(rebirthFrom(4).ok).toBe(true) -- reaches 5: first milestone
+			expect(session.Data.Gems).toBe(gems + rebirth.GemReward + rebirth.Milestones[5].Gems)
+			expect(player:GetAttribute("RebirthTitle")).toBe(rebirth.Milestones[5].Title)
+			expect(BoostService.GetLuck(player)).toBe(luckBefore * (1 + rebirth.Milestones[5].Luck))
+			-- a non-milestone rebirth gives only the normal reward
+			gems = session.Data.Gems
+			expect(rebirthFrom(5).ok).toBe(true)
+			expect(session.Data.Gems).toBe(gems + rebirth.GemReward)
+			-- the last rebirth, then nothing more
+			expect(rebirthFrom(rebirth.MaxRebirths - 1).ok).toBe(true)
+			expect(session.Data.Rebirths).toBe(rebirth.MaxRebirths)
+			expect(player:GetAttribute("RebirthTitle")).toBe("MAX REBIRTH")
+			expect(rebirthFrom(rebirth.MaxRebirths).ok).toBe(false)
+			expect(session.Data.Rebirths).toBe(rebirth.MaxRebirths)
+		end)
 	end)
 
 	describe("Stealing from bases", function()

@@ -16,6 +16,7 @@ export type Modifiers = {
 	ServerLuck: boolean?,
 	ExtraIncubators: boolean?,
 	TreadmillMultiplier: number?, -- set while standing on an owned treadmill
+	Rebirths: number?, -- rebirth milestones add luck
 }
 
 -- Cost to go from `level` to `level + 1`. Returns nil when already at max level.
@@ -79,7 +80,7 @@ function Formulas.CoinMultiplier(rebirths: number, mods: Modifiers): number
 end
 
 function Formulas.Luck(mods: Modifiers): number
-	local luck = 1
+	local luck = 1 + Formulas.RebirthLuck(mods.Rebirths or 0)
 	if mods.Lucky then
 		luck *= Config.Luck.PassMultiplier
 	end
@@ -108,9 +109,33 @@ end
 
 function Formulas.RebirthRequirement(rebirths: number): (number, number)
 	local r = Config.Rebirth
-	local speed = math.floor(r.SpeedBase * r.SpeedGrowth ^ rebirths)
-	local coins = math.floor(r.CoinBase * r.CoinGrowth ^ rebirths)
+	local early = math.min(rebirths, r.LateFrom)
+	local late = math.max(0, rebirths - r.LateFrom)
+	local speed = math.floor(r.SpeedBase * r.SpeedGrowth ^ early * r.SpeedGrowthLate ^ late)
+	local coins = math.floor(r.CoinBase * r.CoinGrowth ^ early * r.CoinGrowthLate ^ late)
 	return speed, coins
+end
+
+-- Total extra luck from rebirth milestones reached (0.1 = +10%).
+function Formulas.RebirthLuck(rebirths: number): number
+	local total = 0
+	for at, milestone in Config.Rebirth.Milestones do
+		if rebirths >= at then
+			total += milestone.Luck
+		end
+	end
+	return total
+end
+
+-- Title of the highest milestone reached, or nil.
+function Formulas.RebirthTitle(rebirths: number): string?
+	local best, title = 0, nil
+	for at, milestone in Config.Rebirth.Milestones do
+		if rebirths >= at and at > best then
+			best, title = at, milestone.Title
+		end
+	end
+	return title
 end
 
 function Formulas.SkipCost(remainingSeconds: number): number

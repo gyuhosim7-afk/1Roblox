@@ -157,14 +157,24 @@ function EffectController.Start()
 		end
 	end)
 
-	-- VIP chat tag
+	-- Chat tags: rebirth milestone title and VIP
 	TextChatService.OnIncomingMessage = function(message: TextChatMessage)
 		local properties = Instance.new("TextChatMessageProperties")
 		local source = message.TextSource
 		if source then
 			local speaker = Players:GetPlayerByUserId(source.UserId)
-			if speaker and speaker:GetAttribute("VIP") then
-				properties.PrefixText = '<font color="#FFD54F">[VIP]</font> ' .. message.PrefixText
+			local prefix = ""
+			if speaker then
+				local title = speaker:GetAttribute("RebirthTitle")
+				if type(title) == "string" then
+					prefix ..= '<font color="#CE93D8">[' .. title .. "]</font> "
+				end
+				if speaker:GetAttribute("VIP") then
+					prefix ..= '<font color="#FFD54F">[VIP]</font> '
+				end
+			end
+			if prefix ~= "" then
+				properties.PrefixText = prefix .. message.PrefixText
 			end
 		end
 		return properties

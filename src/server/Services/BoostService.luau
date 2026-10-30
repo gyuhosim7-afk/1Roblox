@@ -66,6 +66,7 @@ function BoostService.GetModifiers(player: Player): Formulas.Modifiers
 		LuckPotion = session.Data.Potions.Luck > now,
 		SpeedPotion = session.Data.Potions.Speed > now,
 		ServerLuck = serverLuckEndsAt > now,
+		Rebirths = session.Data.Rebirths,
 		TreadmillMultiplier = session.Runtime.TreadmillMultiplier, -- set by TreadmillService
 	}
 end

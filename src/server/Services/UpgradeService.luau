@@ -65,6 +65,9 @@ function UpgradeService.CanRebirth(player: Player): (boolean, string?)
 	if not session then
 		return false, "Loading..."
 	end
+	if session.Data.Rebirths >= Config.Rebirth.MaxRebirths then
+		return false, "You reached MAX REBIRTH!"
+	end
 	local speedReq, coinReq = Formulas.RebirthRequirement(session.Data.Rebirths)
 	if session.Data.Speed < speedReq then
 		return false, "Need " .. Format.Number(speedReq) .. " Speed"
@@ -90,6 +93,15 @@ function UpgradeService.Rebirth(player: Player): (boolean, string?)
 	data.TrainingLevel = 0
 	data.Rebirths += 1
 	data.Gems += Config.Rebirth.GemReward
+	local milestone = Config.Rebirth.Milestones[data.Rebirths]
+	if milestone then
+		data.Gems += milestone.Gems
+		Network.NotifyAll(
+			player.DisplayName .. " reached Rebirth " .. data.Rebirths .. " and became a " .. milestone.Title .. "!",
+			"rare"
+		)
+	end
+	player:SetAttribute("RebirthTitle", Formulas.RebirthTitle(data.Rebirths))
 	SpeedService.RefreshWalkSpeed(player)
 	PlotService.TeleportHome(player)
 	PlayerService.MarkDirty(player, true)
@@ -102,6 +114,10 @@ function UpgradeService.Rebirth(player: Player): (boolean, string?)
 end
 
 function UpgradeService.Init()
+	-- rebirth milestone title (shown as a chat tag)
+	PlayerService.PlayerReady:Connect(function(player: Player, session: PlayerService.Session)
+		player:SetAttribute("RebirthTitle", Formulas.RebirthTitle(session.Data.Rebirths))
+	end)
 	Network.Handle("BuyUpgrade", function(player, payload)
 		local kind = Validate.Key(payload, LEVEL_FIELD)
 		if not kind then
