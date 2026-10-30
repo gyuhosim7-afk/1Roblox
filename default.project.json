@@ -43,6 +43,12 @@
         "GlobalShadows": true
       }
     },
+    "TextChatService": {
+      "$className": "TextChatService",
+      "$properties": {
+        "ChatVersion": "TextChatService"
+      }
+    },
     "SoundService": {
       "$className": "SoundService",
       "$properties": {

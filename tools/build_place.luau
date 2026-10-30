@@ -65,7 +65,14 @@ local function apply(def: any, instance: any)
 	for key, value in def["$properties"] or {} do
 		if type(value) == "number" or type(value) == "boolean" or type(value) == "string" then
 			pcall(function()
-				instance[key] = value
+				local current = instance[key]
+				if type(value) == "string" and typeof(current) == "EnumItem" then
+					-- enum written as its item name, like rojo: "ChatVersion": "TextChatService"
+					local enumName = tostring(current.EnumType):gsub("^Enum%.", "")
+					instance[key] = (roblox.Enum :: any)[enumName][value]
+				else
+					instance[key] = value
+				end
 			end)
 		end
 	end

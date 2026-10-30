@@ -90,7 +90,7 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 
 	local banner = Theme.Frame({
 		Name = "Banner",
-		Size = UDim2.fromOffset(600, 46),
+		Size = UDim2.fromOffset(520, 46), -- narrow enough to clear the menu (left) and rewards (right)
 		Color = Theme.Colors.Accent,
 		Radius = 16,
 		LayoutOrder = 1,
@@ -107,7 +107,7 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	local boosts = Instance.new("Frame")
 	boosts.Name = "Boosts"
 	boosts.BackgroundTransparency = 1
-	boosts.Size = UDim2.fromOffset(600, 30)
+	boosts.Size = UDim2.fromOffset(520, 30)
 	boosts.LayoutOrder = 2
 	boosts.Visible = false
 	boosts.Parent = stack
