@@ -417,6 +417,49 @@ local function buildPlazaDecor(home: Instance, roadStart: number, homeEnd: numbe
 		end
 	end
 
+	-- Flower planters and flag poles in two lanes between the spawn and the runway arch
+	local flagColors = { "#FF4FA3", "#4DA6FF", "#FFD54F", "#7ED957", "#B388FF" }
+	local planterZ = spawnZ + 40
+	local planterIndex = 0
+	while planterZ < homeEnd - 14 do
+		planterIndex += 1
+		for _, side in { -1, 1 } do
+			local x = side * 13
+			Build.Part({
+				Name = "Planter",
+				Size = v3(6, 1.6, 6),
+				Position = v3(x, GROUND_Y + 0.8, planterZ),
+				Color = "#C77D45",
+				Material = Enum.Material.WoodPlanks,
+				Parent = decor,
+			})
+			if not meshDecor(decor, "Decor_Bush", v3(x, GROUND_Y + 1.6, planterZ), 0.9, planterZ + side) then
+				flower(decor, v3(x, GROUND_Y + 1.6, planterZ), flagColors[(planterIndex % #flagColors) + 1])
+			end
+			-- flag pole on the outer side of every other planter
+			if planterIndex % 2 == 0 then
+				local poleX = side * 21
+				Build.Part({
+					Name = "FlagPole",
+					Shape = Enum.PartType.Cylinder,
+					Size = v3(14, 0.6, 0.6),
+					CFrame = CFrame.new(poleX, GROUND_Y + 7, planterZ) * CFrame.Angles(0, 0, math.rad(90)),
+					Color = "#FFFFFF",
+					Parent = decor,
+				})
+				Build.Part({
+					Name = "Flag",
+					Size = v3(0.2, 3.2, 5),
+					Position = v3(poleX, GROUND_Y + 12.2, planterZ + 2.6),
+					Color = flagColors[((planterIndex + side) % #flagColors) + 1],
+					CanCollide = false,
+					Parent = decor,
+				})
+			end
+		end
+		planterZ += 22
+	end
+
 	-- Big arch over the runway start
 	local width = Config.Map.RoadWidth
 	for _, side in { -1, 1 } do
@@ -457,7 +500,7 @@ local function buildHomeForest(home: Instance, roadStart: number, homeEnd: numbe
 	local z = roadStart - 30
 	while z < homeEnd do
 		for _, side in { -1, 1 } do
-			for _ = 1, 2 do
+			for _ = 1, 3 do
 				local key = keys[rng:NextInteger(1, #keys)]
 				local pos =
 					v3(side * rng:NextNumber(halfWidth + 10, halfWidth + 90), GROUND_Y, z + rng:NextNumber(-8, 8))
@@ -466,7 +509,17 @@ local function buildHomeForest(home: Instance, roadStart: number, homeEnd: numbe
 				end
 			end
 		end
-		z += 22
+		-- flower bushes hugging the outer walls of the bases
+		for _, side in { -1, 1 } do
+			meshDecor(
+				forest,
+				"Decor_Bush",
+				v3(side * (halfWidth + rng:NextNumber(2, 6)), GROUND_Y, z),
+				rng:NextNumber(0.7, 1.1),
+				z
+			)
+		end
+		z += 14
 	end
 	-- a row behind the last bases
 	for x = -halfWidth - 60, halfWidth + 60, 20 do
@@ -510,7 +563,7 @@ local function buildHome(root: Instance)
 					GROUND_Y + 0.1,
 					roadStart + tileLength * (row + 0.5)
 				),
-				Color = if (row + column) % 2 == 0 then "#FFF4DC" else "#FFD37A",
+				Color = if (row + column) % 2 == 0 then "#F7E2B0" else "#F0B457",
 				Material = Enum.Material.SmoothPlastic,
 				CastShadow = false,
 				Parent = plaza,
@@ -764,12 +817,19 @@ local function buildZone(root: Instance, zoneIndex: number, rng: Rng)
 			builder(decor, v3(x, GROUND_Y, rng:NextNumber(zMin, zMax)), rng)
 		end
 	end
+	-- an extra band close to the road so the runway is lined with scenery
+	for _ = 1, math.floor(length / 10) do
+		for _, side in { -1, 1 } do
+			local x = side * rng:NextNumber(halfRoad + 7, halfRoad + 30)
+			builder(decor, v3(x, GROUND_Y, rng:NextNumber(zMin, zMax)), rng)
+		end
+	end
 	-- Colored ground patches (flower beds, dunes, snow drifts, lava cracks...) break up flat ground
 	local ground = Build.Hex(def.GroundColor)
 	local patchColor = if def.Decor == "Volcano"
 		then Build.Hex("#FF6A1A")
 		elseif def.Decor == "Void" or def.Decor == "Crystal" then Build.Hex(def.AccentColor)
-		else Build.Shade(ground, 0.2)
+		else Build.Shade(ground, -0.12)
 	local patchNeon = def.Decor == "Volcano" or def.Decor == "Void" or def.Decor == "Crystal"
 	for _ = 1, math.floor(length / 30) do
 		for _, side in { -1, 1 } do
@@ -878,7 +938,7 @@ local function setupLighting()
 	Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 170)
 	Lighting.EnvironmentDiffuseScale = 1
 	Lighting.EnvironmentSpecularScale = 1
-	Lighting.ExposureCompensation = 0
+	Lighting.ExposureCompensation = -0.15
 	Lighting.GlobalShadows = true
 	-- drop effects we don't manage (e.g. Studio's default ColorGrading)
 	local keep = { Atmosphere = true, Sky = true, Bloom = true, ColorCorrection = true, SunRays = true }
@@ -900,13 +960,13 @@ local function setupLighting()
 	sky.SunAngularSize = 14
 	sky.MoonAngularSize = 9
 	local bloom = effect("BloomEffect", "Bloom")
-	bloom.Intensity = 0.55
-	bloom.Size = 28
-	bloom.Threshold = 1.4
+	bloom.Intensity = 0.4
+	bloom.Size = 24
+	bloom.Threshold = 1.8
 	local grading = effect("ColorCorrectionEffect", "ColorCorrection")
-	grading.Saturation = 0.28
-	grading.Contrast = 0.1
-	grading.Brightness = 0.02
+	grading.Saturation = 0.35
+	grading.Contrast = 0.15
+	grading.Brightness = 0
 	grading.TintColor = Build.Hex(ambience.Tint)
 	local rays = effect("SunRaysEffect", "SunRays")
 	rays.Intensity = 0.05

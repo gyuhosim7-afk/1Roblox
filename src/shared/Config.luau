@@ -574,7 +574,7 @@ Config.Zones = {
 			Density = 0.28,
 			Haze = 0.6,
 			Tint = "#FFFFFF",
-			Brightness = 3,
+			Brightness = 2.3,
 		},
 	},
 	{
@@ -598,7 +598,7 @@ Config.Zones = {
 			Density = 0.34,
 			Haze = 1.2,
 			Tint = "#F2FFF0",
-			Brightness = 2.8,
+			Brightness = 2.1,
 		},
 	},
 	{
@@ -622,7 +622,7 @@ Config.Zones = {
 			Density = 0.32,
 			Haze = 1.4,
 			Tint = "#FFF6E6",
-			Brightness = 3.2,
+			Brightness = 2.4,
 		},
 	},
 	{
@@ -646,7 +646,7 @@ Config.Zones = {
 			Density = 0.4,
 			Haze = 1.8,
 			Tint = "#F3F9FF",
-			Brightness = 3,
+			Brightness = 2.3,
 		},
 	},
 	{
@@ -670,7 +670,7 @@ Config.Zones = {
 			Density = 0.42,
 			Haze = 2.2,
 			Tint = "#FFE2D2",
-			Brightness = 2.4,
+			Brightness = 1.9,
 		},
 	},
 	{
@@ -694,7 +694,7 @@ Config.Zones = {
 			Density = 0.38,
 			Haze = 1.8,
 			Tint = "#F0E6FF",
-			Brightness = 2,
+			Brightness = 1.7,
 		},
 	},
 	{
@@ -718,7 +718,7 @@ Config.Zones = {
 			Density = 0.45,
 			Haze = 2.5,
 			Tint = "#E8DDFF",
-			Brightness = 1.6,
+			Brightness = 1.4,
 		},
 	},
 } :: { ZoneDef }

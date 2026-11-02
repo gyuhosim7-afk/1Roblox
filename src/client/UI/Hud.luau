@@ -81,7 +81,7 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	stack.Name = "TopStack"
 	stack.BackgroundTransparency = 1
 	stack.Size = UDim2.fromOffset(600, 420)
-	stack.Position = UDim2.new(0.5, 0, 0, 4)
+	stack.Position = UDim2.new(0.5, 0, 0, 92) -- below the top-right reward buttons
 	stack.AnchorPoint = Vector2.new(0.5, 0)
 	stack.Parent = screen
 	Theme.List(stack, 6)

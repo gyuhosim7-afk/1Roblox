@@ -164,7 +164,7 @@ local function buildPlot(parent: Instance, layout: MapLayout.PlotLayout): PlotSt
 			Shape = Enum.PartType.Cylinder,
 			Size = Vector3.new(1.2, 4.6, 4.6),
 			CFrame = localCFrame(plotCFrame, point.X, 1.6, point.Z) * CFrame.Angles(0, 0, math.rad(90)),
-			Color = "#F5F5FA",
+			Color = Build.Shade(floorColor, 0.18),
 			Material = Enum.Material.SmoothPlastic,
 			Parent = model,
 		})
