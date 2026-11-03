@@ -3,12 +3,11 @@
 -- every top-level element gets a UIScale so it fits phones and big screens alike.
 
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
-local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
+local Icons = require(script.Parent:WaitForChild("Icons"))
 
 local Theme = {}
 
@@ -218,19 +217,9 @@ function Theme.Text(parent: Instance, text: string, props: TextProps?): TextLabe
 	return label
 end
 
--- AI-made icon image from Config.Icons (key like "Shop", "Coins").
-function Theme.Icon(parent: Instance, key: string, size: UDim2?, position: UDim2?, anchor: Vector2?): ImageLabel
-	local image = Instance.new("ImageLabel")
-	image.Name = "Icon"
-	image.BackgroundTransparency = 1
-	image.Image = (Config.Icons :: any)[key] or ""
-	image.ScaleType = Enum.ScaleType.Fit
-	image.Size = size or UDim2.fromOffset(40, 40)
-	image.Position = position or UDim2.new()
-	image.AnchorPoint = anchor or Vector2.zero
-	image.ZIndex = 2
-	image.Parent = parent
-	return image
+-- Hand-drawn icon (see Icons.luau), key like "Shop", "Coins", "Lock".
+function Theme.Icon(parent: Instance, key: string, size: UDim2?, position: UDim2?, anchor: Vector2?): Frame
+	return Icons.Draw(parent, key, size, position, anchor)
 end
 
 -- Small red notification bubble in the top-right corner of a button.
@@ -318,7 +307,7 @@ local WINDOW_ICONS: { [string]: string } = {
 	Slimes = "Slime",
 	["Index & Odds"] = "Index",
 	Rebirth = "Rebirth",
-	Trade = "Slime",
+	Trade = "Trade",
 }
 
 export type Window = {

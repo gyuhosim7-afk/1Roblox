@@ -17,6 +17,29 @@ local SPOTS = {
 	{ -0.6, -0.55, 0.55 },
 }
 
+-- Soft glitter around an egg; eggs from later zones (and the Royal Egg) sparkle more and glow.
+local function glitter(shell: BasePart, eggId: string, spotColor: string)
+	local tier = if eggId == "Royal" then 8 else (Config.Eggs[eggId] and Config.Eggs[eggId].Zone or 1)
+	local color = Build.Hex(spotColor)
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "Glitter"
+	emitter.Rate = 0.6 + tier * 0.5
+	emitter.Lifetime = NumberRange.new(0.9, 1.6)
+	emitter.Speed = NumberRange.new(0.4, 1.4)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 0) })
+	emitter.LightEmission = 1
+	emitter.Color = ColorSequence.new(color, Color3.new(1, 1, 1))
+	emitter.Parent = shell
+	if tier >= 5 then
+		local light = Instance.new("PointLight")
+		light.Color = color
+		light.Range = 7
+		light.Brightness = 0.8
+		light.Parent = shell
+	end
+end
+
 -- eggId may be "Royal" for the Royal Egg.
 function EggBuilder.Build(eggId: string, scale: number?): Model
 	local s = scale or 1
@@ -39,6 +62,7 @@ function EggBuilder.Build(eggId: string, scale: number?): Model
 		mesh.CastShadow = false
 		mesh.Parent = model
 		model.PrimaryPart = mesh
+		glitter(mesh, eggId, spotColor)
 		model:SetAttribute("Egg", eggId)
 		model.WorldPivot = CFrame.new()
 		return model
@@ -55,6 +79,7 @@ function EggBuilder.Build(eggId: string, scale: number?): Model
 		Parent = model,
 	})
 	model.PrimaryPart = shell
+	glitter(shell, eggId, spotColor)
 	for _, spot in SPOTS do
 		Build.Ellipsoid({
 			Name = "Spot",

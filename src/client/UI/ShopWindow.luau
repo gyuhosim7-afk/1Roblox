@@ -13,13 +13,13 @@ local Theme = require(script.Parent.Theme)
 local ShopWindow = {}
 
 local PASS_ICONS = {
-	DoubleCoins = "💰",
-	DoubleSpeed = "⚡",
-	AutoCollect = "🧲",
-	ExtraIncubators = "🥚",
-	VIP = "👑",
-	Lucky = "🍀",
-	VIPTreadmill = "🏃",
+	DoubleCoins = "Coins",
+	DoubleSpeed = "Speed",
+	AutoCollect = "Cash",
+	ExtraIncubators = "Egg",
+	VIP = "Crown",
+	Lucky = "Luck",
+	VIPTreadmill = "Trophy",
 }
 
 function ShopWindow.Create(screen: ScreenGui, ctx: any)
@@ -41,7 +41,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 	local lastState: any = nil
 	local refresh: (any) -> ()
 	local tabButtons: { [string]: TextButton } = {}
-	for order, info in { { "Boosts", "🚀 Boosts" }, { "Passes", "⭐ Passes" }, { "Gems", "💎 Gems" } } do
+	for order, info in { { "Boosts", "Boosts" }, { "Passes", "Passes" }, { "Gems", "Gems" } } do
 		tabButtons[info[1]] = Theme.Button(tabs, info[2], Theme.Colors.Pink, function()
 			tab = info[1]
 			if lastState then
@@ -78,9 +78,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		if stroke then
 			stroke.Color = color
 		end
-		local iconLabel = Theme.Text(frame, icon, { MaxSize = 36 })
-		iconLabel.Size = UDim2.fromOffset(50, 46)
-		iconLabel.Position = UDim2.fromOffset(6, 6)
+		Theme.Icon(frame, icon, UDim2.fromOffset(44, 44), UDim2.fromOffset(8, 7))
 		local titleLabel = Theme.Text(frame, title, { MaxSize = 22, Color = color, Align = Enum.TextXAlignment.Left })
 		titleLabel.Size = UDim2.new(1, -66, 0, 46)
 		titleLabel.Position = UDim2.fromOffset(58, 6)
@@ -123,11 +121,11 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			if not hidden then
 				local owned = state.Passes and state.Passes[key]
 				local frame =
-					itemCard(scroll, order, PASS_ICONS[key] or "⭐", def.Name, def.Description, Theme.Colors.Accent)
+					itemCard(scroll, order, PASS_ICONS[key] or "Star", def.Name, def.Description, Theme.Colors.Accent)
 				if owned then
 					buyRow(frame, {
 						{
-							text = "OWNED ✔",
+							text = "OWNED",
 							color = Theme.Colors.Green,
 							onClick = function() end,
 							enabled = false,
@@ -167,7 +165,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			if bonus > 0 then
 				desc = "+" .. bonus .. "% bonus gems!\n" .. desc
 			end
-			local frame = itemCard(scroll, order, "💎", def.Name, desc, Theme.Colors.Gem)
+			local frame = itemCard(scroll, order, "Gem", def.Name, desc, Theme.Colors.Gem)
 			buyRow(frame, {
 				{
 					text = "R$ " .. def.Price,
@@ -207,7 +205,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			if gemItem then
 				local cost = (Config.GemShop :: any)[gemItem]
 				table.insert(buttons, {
-					text = cost .. " 💎",
+					text = cost .. " Gems",
 					color = Theme.Colors.Blue,
 					onClick = function()
 						ctx.Request("BuyWithGems", gemItem)
@@ -228,7 +226,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			local frame = itemCard(
 				scroll,
 				order,
-				"👑",
+				"Crown",
 				royal.Name,
 				"Hatch a Rare-or-better slime from your best zone instantly! Tap to see every outcome's odds first.",
 				Theme.Colors.Gold
@@ -244,7 +242,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			})
 			product(
 				"LuckPotion",
-				"🍀",
+				"Luck",
 				"Luck x"
 					.. Config.Luck.PotionMultiplier
 					.. " for 15 min: Rare+ slimes and mutations become "
@@ -255,7 +253,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 			)
 			product(
 				"ServerLuck",
-				"🌟",
+				"Star",
 				"Luck x" .. Config.Luck.ServerMultiplier .. " for EVERYONE in this server for 15 minutes!",
 				nil,
 				Theme.Colors.Pink,
@@ -270,7 +268,7 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		end
 		product(
 			"SpeedPotion",
-			"⚡",
+			"Speed",
 			"Speed gain x" .. Config.Boosts.SpeedPotionMultiplier .. " for 15 minutes.",
 			"SpeedPotion",
 			Theme.Colors.Gold
@@ -278,19 +276,19 @@ function ShopWindow.Create(screen: ScreenGui, ctx: any)
 		local income = state.IncomePerSecond or 0
 		product(
 			"CashSmall",
-			"💵",
+			"Cash",
 			"Get $" .. Format.Number(Formulas.CashPackCoins("CashSmall", income)) .. " now (15 min of your income).",
 			nil,
 			Theme.Colors.Green
 		)
 		product(
 			"CashLarge",
-			"💰",
+			"Coins",
 			"Get $" .. Format.Number(Formulas.CashPackCoins("CashLarge", income)) .. " now (1 hour of your income).",
 			nil,
 			Theme.Colors.Green
 		)
-		product("InstantHatch", "⏩", "Hatch every egg in your incubators right now.", nil, Theme.Colors.Blue)
+		product("InstantHatch", "Hatch", "Hatch every egg in your incubators right now.", nil, Theme.Colors.Blue)
 	end
 
 	refresh = function(state: any)

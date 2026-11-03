@@ -116,7 +116,8 @@ function SlimeService.AddSlime(
 	kind: string,
 	mutation: string,
 	source: string?,
-	force: boolean?
+	force: boolean?,
+	eggId: string? -- the egg it came from (for the hatch animation)
 ): ProfileSchema.SlimeRecord?
 	local session = PlayerService.Get(player)
 	local def = Config.Slimes[kind]
@@ -154,6 +155,7 @@ function SlimeService.AddSlime(
 		New = isNew,
 		Gems = gems,
 		Source = source or "Hatch",
+		Egg = eggId or (if source == "Royal" then "Royal" else nil),
 		Id = record.Id,
 	})
 	local order = Config.Rarities[def.Rarity].Order

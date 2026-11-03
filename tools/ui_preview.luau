@@ -67,9 +67,11 @@ if windowNames[scene] then
 	world:Advance(0.5)
 elseif scene == "royal" then
 	Popups.RoyalOdds(StateController.State, function() end)
-elseif scene == "hatch" then
-	SlimeService.AddSlime(player, "CrystalTitanSlime", "Gold")
-	world:Advance(0.3)
+elseif scene == "hatch" or scene == "hatchshake" or scene == "hatchmythic" then
+	-- legendary gold slime (or a mythic one); "hatchshake" stops while the egg still shakes
+	local kind = if scene == "hatchmythic" then "CelestialSlime" else "CrystalTitanSlime"
+	SlimeService.AddSlime(player, kind, if scene == "hatchmythic" then "None" else "Gold", "Hatch", true, "Crystal")
+	world:Advance(if scene == "hatchshake" then 1.6 else 3.4)
 elseif scene == "nest" then
 	local nest = EggService.GetNests()[1]
 	player.Character:PivotTo(roblox.CFrame.new(nest.Position + roblox.Vector3.new(0, 2, 4)))
@@ -79,6 +81,47 @@ end
 world:Advance(0.3)
 
 local gui = player.PlayerGui:FindFirstChild("MainGui")
+
+-- "icons": every hand-drawn icon, big, on a sheet (to review the icon set)
+if scene == "icons" then
+	for _, child in gui:GetChildren() do
+		if child.ClassName == "Frame" then
+			child.Visible = false
+		end
+	end
+	local Icons = world:RequireInstance(client.UI.Icons)
+	local sheet = world.InstanceLib.new("Frame")
+	sheet.Name = "Sheet"
+	sheet.BackgroundTransparency = 1
+	sheet.Size = roblox.UDim2.fromScale(1, 1)
+	sheet.Parent = gui
+	local keys = {}
+	for _, key in { "Coin", "Gem", "Shop", "Rebirth", "Upgrade", "Slime", "Index", "Daily", "Gift", "Trade", "Bonk" } do
+		table.insert(keys, key)
+	end
+	for _, key in { "Lock", "Unlock", "Speed", "Luck", "Star", "Crown", "Cash", "Egg", "Pedestal", "Hatch", "Trophy" } do
+		table.insert(keys, key)
+	end
+	for index, key in keys do
+		local col = (index - 1) % 11
+		local row = (index - 1) // 11
+		local cell = world.InstanceLib.new("Frame")
+		cell.Name = key
+		cell.BackgroundColor3 = if row == 0
+			then roblox.Color3.fromRGB(60, 70, 120)
+			else roblox.Color3.fromRGB(70, 60, 110)
+		cell.Size = roblox.UDim2.fromOffset(width / 11 - 8, (height - 60) / 2 - 8)
+		cell.Position = roblox.UDim2.fromOffset(4 + col * width / 11, 10 + row * (height - 60) / 2)
+		cell.Parent = sheet
+		Icons.Draw(
+			cell,
+			key,
+			roblox.UDim2.fromScale(0.86, 0.86),
+			roblox.UDim2.fromScale(0.5, 0.45),
+			roblox.Vector2.new(0.5, 0.5)
+		)
+	end
+end
 
 -- Layout ------------------------------------------------------------------------------
 local out = {}
@@ -262,6 +305,15 @@ render = function(inst, parentRect, parentPixelScale, depth, placed)
 	else
 		local w = udim(inst.Size.X, parentRect.w, parentPixelScale) * k
 		local h = udim(inst.Size.Y, parentRect.h, parentPixelScale) * k
+		local aspect = child(inst, "UIAspectRatioConstraint")
+		if aspect then
+			local ratio = aspect.AspectRatio or 1
+			if w / math.max(h, 0.001) > ratio then
+				w = h * ratio
+			else
+				h = w / ratio
+			end
+		end
 		local anchor = inst.AnchorPoint or roblox.Vector2.new(0, 0)
 		local x = parentRect.x + udim(inst.Position.X, parentRect.w, parentPixelScale) - anchor.X * w
 		local y = parentRect.y + udim(inst.Position.Y, parentRect.h, parentPixelScale) - anchor.Y * h
@@ -279,13 +331,16 @@ render = function(inst, parentRect, parentPixelScale, depth, placed)
 			table.insert(styles, "background-image:linear-gradient(rgba(255,255,255,0.0),rgba(0,0,0,0.25))")
 		end
 	end
+	if (inst.Rotation or 0) ~= 0 then
+		table.insert(styles, string.format("transform:rotate(%.1fdeg)", inst.Rotation))
+	end
 	local corner = child(inst, "UICorner")
 	if corner then
 		local r = corner.CornerRadius.Scale * math.min(rect.w, rect.h) + corner.CornerRadius.Offset * pixelScale
 		table.insert(styles, string.format("border-radius:%.1fpx", r))
 	end
 	local stroke = child(inst, "UIStroke")
-	if stroke and inst.ClassName ~= "TextLabel" then
+	if stroke and stroke.Enabled ~= false and inst.ClassName ~= "TextLabel" then
 		table.insert(
 			styles,
 			string.format(

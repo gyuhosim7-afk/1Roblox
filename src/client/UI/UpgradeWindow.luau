@@ -17,7 +17,7 @@ local LEVEL_FIELD = {
 	Incubators = "IncubatorLevel",
 	Lock = "LockLevel",
 }
-local ICONS = { Training = "⚡", Pedestals = "🏛", Incubators = "🥚", Lock = "🔒" }
+local ICONS = { Training = "Speed", Pedestals = "Pedestal", Incubators = "Egg", Lock = "Lock" }
 
 function UpgradeWindow.Create(screen: ScreenGui, ctx: any)
 	local window = Theme.Window(screen, "Upgrades", Vector2.new(640, 470), ctx.Close)
@@ -37,9 +37,7 @@ function UpgradeWindow.Create(screen: ScreenGui, ctx: any)
 			LayoutOrder = index,
 			Parent = list,
 		})
-		local icon = Theme.Text(frame, ICONS[kind] or "", { MaxSize = 40 })
-		icon.Size = UDim2.fromOffset(60, 60)
-		icon.Position = UDim2.fromOffset(8, 10)
+		Theme.Icon(frame, ICONS[kind] or "Star", UDim2.fromOffset(58, 58), UDim2.fromOffset(10, 11))
 		local title = Theme.Text(frame, def.Name, { MaxSize = 26, Align = Enum.TextXAlignment.Left })
 		title.Size = UDim2.new(1, -260, 0, 34)
 		title.Position = UDim2.fromOffset(74, 6)

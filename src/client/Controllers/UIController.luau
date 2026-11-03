@@ -191,7 +191,7 @@ function UIController.Start()
 		refreshOpenWindow()
 		if not announcedDaily and state.Daily and state.Daily.Available then
 			announcedDaily = true
-			Toasts.Show("Daily reward ready! Tap 📅 Daily for +" .. state.Daily.Gems .. " gems", "rare")
+			Toasts.Show("Daily reward ready! Tap DAILY for +" .. state.Daily.Gems .. " gems", "rare")
 		end
 	end)
 
@@ -207,7 +207,7 @@ function UIController.Start()
 				local carrying = player:GetAttribute("CarryingEgg")
 				if type(carrying) == "string" and Config.Eggs[carrying] then
 					Hud.SetBanner(
-						"🥚 Carrying " .. Config.Eggs[carrying].Name .. " - run back to your base!",
+						"Carrying " .. Config.Eggs[carrying].Name .. " - run back to your base!",
 						Theme.Colors.Accent
 					)
 				else

@@ -178,7 +178,7 @@ local function refreshLabels(state: any)
 					.. " · x"
 					.. def.Multiplier
 					.. " Speed"
-					.. (if mine then "" else "  🔒 " .. lockText)
+					.. (if mine then "" else "  LOCKED: " .. lockText)
 			end
 			local prompt = console and console:FindFirstChild("BuyPrompt") :: ProximityPrompt?
 			if prompt then

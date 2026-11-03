@@ -54,7 +54,7 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 		{ MaxSize = 17, Color = Theme.Colors.SubText, LayoutOrder = 5 }
 	)
 	keep.Size = UDim2.new(1, -20, 0, 50)
-	local button = Theme.Button(list, "♻ REBIRTH", Theme.Colors.Accent, function()
+	local button = Theme.Button(list, "REBIRTH", Theme.Colors.Accent, function()
 		ctx.Request("Rebirth")
 	end, { Size = UDim2.fromOffset(300, 70), LayoutOrder = 6, MaxText = 32 })
 
@@ -62,7 +62,7 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 		local data = state.Data
 		local max = Config.Rebirth.MaxRebirths
 		if data.Rebirths >= max then
-			title.Text = "🏆 MAX REBIRTH (" .. max .. "/" .. max .. ")"
+			title.Text = "MAX REBIRTH (" .. max .. "/" .. max .. ")"
 			speedFill.Size = UDim2.fromScale(1, 1)
 			coinFill.Size = UDim2.fromScale(1, 1)
 			speedLabel.Text = "You finished every rebirth!"
@@ -77,12 +77,12 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 		local coinFraction = math.clamp(data.Coins / coinReq, 0, 1)
 		speedFill.Size = UDim2.fromScale(speedFraction, 1)
 		coinFill.Size = UDim2.fromScale(coinFraction, 1)
-		speedLabel.Text = "⚡ "
+		speedLabel.Text = "Speed "
 			.. Format.Number(math.floor(data.Speed))
 			.. " / "
 			.. Format.Number(speedReq)
 			.. " Speed"
-		coinLabel.Text = "💰 $" .. Format.Number(math.floor(data.Coins)) .. " / $" .. Format.Number(coinReq)
+		coinLabel.Text = "Coins $" .. Format.Number(math.floor(data.Coins)) .. " / $" .. Format.Number(coinReq)
 		local nextRebirths = data.Rebirths + 1
 		reward.Text = "Reward: Speed gain +"
 			.. math.floor(Config.Rebirth.SpeedBonusPerRebirth * 100 * nextRebirths)
@@ -90,7 +90,7 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 			.. math.floor(Config.Rebirth.CoinBonusPerRebirth * 100 * nextRebirths)
 			.. "% (total), +"
 			.. Config.Rebirth.GemReward
-			.. " 💎"
+			.. " Gems"
 		-- the next milestone (title + bonus gems + luck) to aim for
 		local nextAt: number? = nil
 		for at in Config.Rebirth.Milestones do
@@ -100,11 +100,9 @@ function RebirthWindow.Create(screen: ScreenGui, ctx: any)
 		end
 		if nextAt then
 			local milestone = Config.Rebirth.Milestones[nextAt]
-			reward.Text ..= "\n" .. (if nextAt == nextRebirths
-				then "🌟 NOW: "
-				else "🌟 At Rebirth " .. nextAt .. ": ") .. milestone.Title .. " title, +" .. Format.Number(
+			reward.Text ..= "\n" .. (if nextAt == nextRebirths then "NOW: " else "At Rebirth " .. nextAt .. ": ") .. milestone.Title .. " title, +" .. Format.Number(
 				milestone.Gems
-			) .. " 💎, Luck +" .. math.floor(milestone.Luck * 100) .. "%"
+			) .. " Gems, Luck +" .. math.floor(milestone.Luck * 100) .. "%"
 		end
 		Theme.SetButtonEnabled(button, speedFraction >= 1 and coinFraction >= 1, Theme.Colors.Accent)
 	end

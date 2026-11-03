@@ -113,10 +113,10 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	boosts.Parent = stack
 	Theme.List(boosts, 8, true)
 	refs.BoostsRow = boosts
-	local boostInfo: { { Key: string, Text: string, Color: Color3 } } = {
-		{ Key = "LuckPotion", Text = "🍀 Luck x2", Color = Theme.Colors.Green },
-		{ Key = "SpeedPotion", Text = "⚡ Speed x2", Color = Theme.Colors.Blue },
-		{ Key = "ServerLuck", Text = "🌟 Server Luck x2", Color = Theme.Colors.Purple },
+	local boostInfo: { { Key: string, Text: string, Icon: string, Color: Color3 } } = {
+		{ Key = "LuckPotion", Text = "Luck x2", Icon = "Luck", Color = Theme.Colors.Green },
+		{ Key = "SpeedPotion", Text = "Speed x2", Icon = "Speed", Color = Theme.Colors.Blue },
+		{ Key = "ServerLuck", Text = "Server Luck x2", Icon = "Star", Color = Theme.Colors.Purple },
 	}
 	for index, info in boostInfo do
 		local frame = Theme.Frame({
@@ -128,9 +128,10 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 			Parent = boosts,
 		})
 		frame.Visible = false
+		Theme.Icon(frame, info.Icon, UDim2.fromOffset(30, 30), UDim2.new(0, 2, 0.5, 0), Vector2.new(0, 0.5))
 		local label = Theme.Text(frame, info.Text, { MaxSize = 18, StrokeThickness = 2 })
-		label.Size = UDim2.new(1, -10, 1, -4)
-		label.Position = UDim2.fromOffset(5, 2)
+		label.Size = UDim2.new(1, -40, 1, -4)
+		label.Position = UDim2.fromOffset(34, 2)
 		refs[info.Key] = { Frame = frame, Label = label, Text = info.Text }
 	end
 
@@ -207,10 +208,10 @@ function Hud.Mount(screen: ScreenGui, actions: Actions)
 	refs.Gift = tile(rewards, "Gift", "GIFT", "Gift", Color3.fromRGB(255, 120, 200), actions.ClaimGift, 2)
 	refs.Gift.Size = UDim2.fromOffset(92, 78)
 	refs.GiftBadge = Theme.Badge(refs.Gift, "!")
-	refs.Daily = tile(rewards, "Daily", "DAILY", "Egg", Color3.fromRGB(255, 160, 40), actions.ClaimDaily, 1)
+	refs.Daily = tile(rewards, "Daily", "DAILY", "Daily", Color3.fromRGB(255, 160, 40), actions.ClaimDaily, 1)
 	refs.Daily.Size = UDim2.fromOffset(92, 78)
 	refs.DailyBadge = Theme.Badge(refs.Daily, "1")
-	refs.Trade = tile(rewards, "Trade", "TRADE", "Slime", Color3.fromRGB(40, 190, 170), function()
+	refs.Trade = tile(rewards, "Trade", "TRADE", "Trade", Color3.fromRGB(40, 190, 170), function()
 		actions.OpenWindow("Trade")
 	end, 3)
 	refs.Trade.Size = UDim2.fromOffset(92, 78)

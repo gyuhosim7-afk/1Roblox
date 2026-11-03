@@ -114,8 +114,14 @@ function HatchService.RefreshVisuals(player: Player)
 		if wanted and not model then
 			local newModel = EggBuilder.Build(wanted, 0.9)
 			newModel:PivotTo(slot.Anchor * CFrame.new(0, -0.9, 0))
+			newModel:AddTag("IncubatorEgg") -- the client wobbles it harder as hatching gets close
 			newModel.Parent = plot.Model
 			models[slot.Index] = newModel
+		end
+		local current = models[slot.Index]
+		if current then
+			current:SetAttribute("HatchAt", if egg then egg.HatchAt else 0)
+			current:SetAttribute("Duration", if egg then egg.Duration else 0)
 		end
 		slot.Part:SetAttribute("Egg", if egg then egg.Egg else "")
 		slot.Part:SetAttribute("HatchAt", if egg then egg.HatchAt else 0)
@@ -205,7 +211,7 @@ function HatchService.Hatch(player: Player, slot: number): boolean
 	local kind, mutation = Odds.Roll(egg.Egg, luck, roll)
 	table.remove(session.Data.Eggs, index)
 	session.Data.Stats.EggsHatched += 1
-	SlimeService.AddSlime(player, kind, mutation, "Hatch")
+	SlimeService.AddSlime(player, kind, mutation, "Hatch", nil, egg.Egg)
 	HatchService.RefreshVisuals(player)
 	PlayerService.AdvanceTutorial(player, 3)
 	return true

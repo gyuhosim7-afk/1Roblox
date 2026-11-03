@@ -61,6 +61,8 @@ local function showNestEgg(nest: Nest, visible: boolean)
 		for _, part in nest.Model:GetDescendants() do
 			if part:IsA("BasePart") then
 				part.Transparency = if visible then 0 else 1
+			elseif part:IsA("ParticleEmitter") or part:IsA("PointLight") then
+				(part :: any).Enabled = visible
 			end
 		end
 	end
@@ -299,6 +301,7 @@ local function setupNest(info: { Zone: number, Index: number, Part: BasePart, Po
 	local model = EggBuilder.Build(eggId)
 	model.Name = "NestEgg"
 	model:PivotTo(CFrame.new(info.Position) * CFrame.Angles(0, (info.Index * 1.3) % (math.pi * 2), 0))
+	model:AddTag("NestEgg") -- the client makes it bob and turn
 	model.Parent = info.Part.Parent
 	local shell = model.PrimaryPart
 	local nest: Nest = {

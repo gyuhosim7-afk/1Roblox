@@ -33,13 +33,13 @@ function IndexWindow.Create(screen: ScreenGui, ctx: any)
 	local lastState: any = nil
 	local refresh: (any) -> ()
 
-	local eggsButton = Theme.Button(tabs, "🥚 Eggs & Odds", Theme.Colors.Purple, function()
+	local eggsButton = Theme.Button(tabs, "Eggs & Odds", Theme.Colors.Purple, function()
 		tab = "Eggs"
 		if lastState then
 			refresh(lastState)
 		end
 	end, { Size = UDim2.fromOffset(220, 42), LayoutOrder = 1, MaxText = 20 })
-	local dexButton = Theme.Button(tabs, "📖 Slimedex", Theme.Colors.Blue, function()
+	local dexButton = Theme.Button(tabs, "Slimedex", Theme.Colors.Blue, function()
 		tab = "Dex"
 		if lastState then
 			refresh(lastState)
@@ -125,7 +125,7 @@ function IndexWindow.Create(screen: ScreenGui, ctx: any)
 					frame,
 					if known
 						then "$" .. Format.Number(def.Income) .. "/s"
-						else "+" .. Config.Rarities[def.Rarity].DiscoveryGems .. " 💎",
+						else "+" .. Config.Rarities[def.Rarity].DiscoveryGems .. " Gems",
 					{ MaxSize = 14, Color = if known then Theme.Colors.Green else Theme.Colors.Gem }
 				)
 				reward.Size = UDim2.new(1, -8, 0, 20)

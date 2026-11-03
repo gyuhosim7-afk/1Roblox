@@ -300,7 +300,7 @@ function TradeService.SetOffer(player: Player, payload: any): (boolean, string?)
 			return false, "You don't own that slime."
 		end
 		if slime.Locked then
-			return false, "Unlock that slime first (🔒 in Slimes)."
+			return false, "Unlock that slime first (lock button in Slimes)."
 		end
 		seen[id] = true
 		table.insert(ids, id)

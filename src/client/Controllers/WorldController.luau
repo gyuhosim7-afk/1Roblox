@@ -116,7 +116,7 @@ local function updateIncubatorLabels()
 				if type(eggId) ~= "string" or eggId == "" or not Config.Eggs[eggId] then
 					label.Text = ""
 				elseif part:GetAttribute("Reserved") then
-					label.Text = "⚠ BEING STOLEN!"
+					label.Text = "BEING STOLEN!"
 				else
 					local remaining = (part:GetAttribute("HatchAt") or 0) - now
 					label.Text = Config.Eggs[eggId].Name
@@ -166,6 +166,48 @@ local function animateSlimes(t: number)
 			model:PivotTo(info.Base * CFrame.new(0, bounce, 0))
 			if info.Body and model:HasTag("RainbowSlime") then
 				info.Body.Color = Color3.fromHSV((t * 0.25 + info.Phase) % 1, 0.7, 1)
+			end
+		end
+	end
+end
+
+-- Egg animation: nest eggs bob and turn; incubator eggs wobble harder as hatching gets close
+-- and jump in the last seconds. Client only (anchored server models, moved locally).
+type EggAnim = { Model: Model, Base: CFrame, Phase: number, Incubator: boolean }
+local eggs: { [Model]: EggAnim } = {}
+
+local function trackEgg(model: Instance, incubator: boolean)
+	if model:IsA("Model") then
+		eggs[model] = { Model = model, Base = model:GetPivot(), Phase = math.random() * 6, Incubator = incubator }
+	end
+end
+
+local function animateEggs(t: number)
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return
+	end
+	local camPos = camera.CFrame.Position
+	local now = StateController.Now()
+	for model, info in eggs do
+		if model.Parent == nil then
+			eggs[model] = nil
+			continue
+		end
+		if (info.Base.Position - camPos).Magnitude < 110 then
+			if info.Incubator then
+				local hatchAt = model:GetAttribute("HatchAt")
+				local duration = model:GetAttribute("Duration")
+				local remaining = if type(hatchAt) == "number" then hatchAt - now else math.huge
+				local progress = if type(duration) == "number" and duration > 0
+					then math.clamp(1 - remaining / duration, 0, 1)
+					else 0
+				local wobble = math.rad(3 + 14 * progress * progress) * math.sin(t * (6 + 10 * progress) + info.Phase)
+				local hop = if remaining < 3 then math.abs(math.sin(t * 9 + info.Phase)) * 0.6 else 0
+				model:PivotTo(info.Base * CFrame.new(0, hop, 0) * CFrame.Angles(0, 0, wobble))
+			else
+				local bob = math.sin(t * 2 + info.Phase) * 0.35 + 0.35
+				model:PivotTo(info.Base * CFrame.new(0, bob, 0) * CFrame.Angles(0, t * 0.6 + info.Phase, 0))
 			end
 		end
 	end
@@ -352,12 +394,27 @@ function WorldController.Start()
 		animated[model :: Model] = nil
 	end)
 
+	for _, tag in { "NestEgg", "IncubatorEgg" } do
+		local incubator = tag == "IncubatorEgg"
+		for _, model in CollectionService:GetTagged(tag) do
+			trackEgg(model, incubator)
+		end
+		CollectionService:GetInstanceAddedSignal(tag):Connect(function(model)
+			trackEgg(model, incubator)
+		end)
+		CollectionService:GetInstanceRemovedSignal(tag):Connect(function(model)
+			eggs[model :: Model] = nil
+		end)
+	end
+
 	local accumulator = 0
 	RunService.RenderStepped:Connect(function(dt)
 		accumulator += dt
 		if accumulator >= 1 / 30 then
 			accumulator = 0
-			animateSlimes(os.clock())
+			local t = os.clock()
+			animateSlimes(t)
+			animateEggs(t)
 		end
 	end)
 

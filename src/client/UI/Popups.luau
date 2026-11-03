@@ -1,138 +1,31 @@
 --!strict
--- Popups: hatch reveal (3D slime in a viewport), offline earnings, the Royal Egg odds screen
+-- Popups: hatch reveal (HatchReveal), offline earnings, the Royal Egg odds screen
 -- (shown before any purchase) and the odds panel that appears near a nest.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared.Config)
 local Format = require(Shared.Format)
 local Odds = require(Shared.Odds)
-local SlimeBuilder = require(Shared.SlimeBuilder)
 local Theme = require(script.Parent.Theme)
 local OddsView = require(script.Parent.OddsView)
+local HatchReveal = require(script.Parent.HatchReveal)
 
 local Popups = {}
 
 local screen: ScreenGui? = nil
 local topStack: Frame? = nil
-local hatchQueue: { any } = {}
-local showingHatch = false
 
 function Popups.Mount(gui: ScreenGui, stack: Frame)
 	screen = gui
+	HatchReveal.Mount(gui)
 	topStack = stack
 end
 
--- Hatch reveal ------------------------------------------------------------------
-local function showNextHatch()
-	local gui = screen
-	if showingHatch or #hatchQueue == 0 or not gui then
-		return
-	end
-	showingHatch = true
-	local info = table.remove(hatchQueue, 1)
-	local def = Config.Slimes[info.Kind]
-	if not def then
-		showingHatch = false
-		return
-	end
-	local rarityColor = Theme.Hex(Config.Rarities[def.Rarity].Color)
-
-	local frame = Theme.Frame({
-		Name = "HatchPopup",
-		Size = UDim2.fromOffset(360, 400),
-		Position = UDim2.fromScale(0.5, 0.48),
-		AnchorPoint = Vector2.new(0.5, 0.5),
-		Color = Theme.Colors.Background,
-		Radius = 24,
-		Parent = gui,
-	})
-	frame.ZIndex = 20
-	Theme.AutoScale(frame)
-	local stroke = frame:FindFirstChildOfClass("UIStroke")
-	if stroke then
-		stroke.Color = rarityColor
-		stroke.Thickness = 5
-	end
-	local viewport = Instance.new("ViewportFrame")
-	viewport.BackgroundTransparency = 1
-	viewport.Size = UDim2.fromOffset(300, 230)
-	viewport.Position = UDim2.fromOffset(30, 50)
-	viewport.Ambient = Color3.fromRGB(200, 200, 200)
-	viewport.LightColor = Color3.new(1, 1, 1)
-	viewport.Parent = frame
-	local model = SlimeBuilder.Build(info.Kind, info.Mutation)
-	model.Parent = viewport
-	local camera = Instance.new("Camera")
-	camera.FieldOfView = 40
-	local scale = SlimeBuilder.Scale(info.Kind)
-	camera.CFrame = CFrame.lookAt(Vector3.new(0, 2.2 * scale, -9 * scale), Vector3.new(0, 1.4 * scale, 0))
-	camera.Parent = viewport
-	viewport.CurrentCamera = camera
-
-	local headline = if info.Source == "Royal" then "ROYAL HATCH!" else "HATCHED!"
-	if info.New then
-		headline = "NEW SLIME!"
-	end
-	local top = Theme.Text(frame, headline, { MaxSize = 34, Color = Theme.Colors.Gold })
-	top.Size = UDim2.new(1, -20, 0, 44)
-	top.Position = UDim2.fromOffset(10, 6)
-	local mutationName = if info.Mutation ~= "None" then (Config.Mutations :: any)[info.Mutation].Name .. " " else ""
-	local name = Theme.Text(frame, mutationName .. def.Name, { MaxSize = 30, Color = rarityColor })
-	name.Size = UDim2.new(1, -20, 0, 40)
-	name.Position = UDim2.fromOffset(10, 284)
-	local detail = def.Rarity
-		.. "  -  $"
-		.. Format.Number(def.Income * (Config.Mutations :: any)[info.Mutation or "None"].Multiplier)
-		.. "/s"
-	if info.Gems and info.Gems > 0 then
-		detail ..= "   +" .. info.Gems .. " 💎"
-	end
-	local sub = Theme.Text(frame, detail, { MaxSize = 22, Color = Theme.Colors.SubText })
-	sub.Size = UDim2.new(1, -20, 0, 30)
-	sub.Position = UDim2.fromOffset(10, 326)
-	local tap = Theme.Text(frame, "tap to close", { MaxSize = 14, Color = Theme.Colors.SubText })
-	tap.Size = UDim2.new(1, -20, 0, 20)
-	tap.Position = UDim2.fromOffset(10, 368)
-
-	local closeButton = Instance.new("TextButton")
-	closeButton.BackgroundTransparency = 1
-	closeButton.Text = ""
-	closeButton.Size = UDim2.fromScale(1, 1)
-	closeButton.ZIndex = 10
-	closeButton.Parent = frame
-
-	Theme.Play("Hatch", if Config.Rarities[def.Rarity].Order >= 4 then 0.8 else 0.4)
-	local spin = RunService.RenderStepped:Connect(function(dt: number)
-		model:PivotTo(model:GetPivot() * CFrame.Angles(0, dt * 1.2, 0))
-	end)
-	local closed = false
-	local function close()
-		if closed then
-			return
-		end
-		closed = true
-		spin:Disconnect()
-		frame:Destroy()
-		showingHatch = false
-		showNextHatch()
-	end
-	closeButton.Activated:Connect(close)
-	local uiScale = frame:FindFirstChildOfClass("UIScale")
-	if uiScale then
-		local target = uiScale.Scale
-		uiScale.Scale = target * 0.3
-		TweenService:Create(uiScale, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = target }):Play()
-	end
-	task.delay(if Config.Rarities[def.Rarity].Order >= 4 or info.New then 3.5 else 2.2, close)
-end
-
+-- Hatch reveal (see HatchReveal.luau) ---------------------------------------------
 function Popups.Hatch(info: any)
-	table.insert(hatchQueue, info)
-	showNextHatch()
+	HatchReveal.Show(info)
 end
 
 -- Simple message popup -----------------------------------------------------------
@@ -189,7 +82,7 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 	local zone = Config.Zones[math.clamp(state.Data.BestZone, 1, #Config.Zones)]
 	local luck = state.Luck or 1
 	local title =
-		Theme.Text(frame, "👑 Royal Egg - " .. zone.Name .. " slimes", { MaxSize = 28, Color = Theme.Colors.Gold })
+		Theme.Text(frame, "Royal Egg - " .. zone.Name .. " slimes", { MaxSize = 28, Color = Theme.Colors.Gold })
 	title.Size = UDim2.new(1, -70, 0, 44)
 	title.Position = UDim2.fromOffset(10, 8)
 	Theme.Button(frame, "X", Theme.Colors.Red, function()
@@ -221,7 +114,7 @@ function Popups.RoyalOdds(state: any, request: (string, any?) -> ())
 	Theme.Button(row, "Buy R$ " .. Config.Products.RoyalEgg.Price, Theme.Colors.Green, function()
 		request("BuyProduct", "RoyalEgg")
 	end, { Size = UDim2.fromOffset(250, 58), LayoutOrder = 1 })
-	local gemButton = Theme.Button(row, "Buy " .. Config.GemShop.RoyalEgg .. " 💎", Theme.Colors.Blue, function()
+	local gemButton = Theme.Button(row, "Buy " .. Config.GemShop.RoyalEgg .. " Gems", Theme.Colors.Blue, function()
 		request("BuyWithGems", "RoyalEgg")
 	end, { Size = UDim2.fromOffset(250, 58), LayoutOrder = 2 })
 	Theme.SetButtonEnabled(gemButton, state.Data.Gems >= Config.GemShop.RoyalEgg, Theme.Colors.Blue)

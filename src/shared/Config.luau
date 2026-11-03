@@ -101,6 +101,37 @@ Config.Rarities = {
 	Mythic = { Order = 6, Color = "#FF4FA3", DiscoveryGems = 200 },
 }
 
+-- Hatch reveal per rarity: the higher the rarity, the longer the egg shakes and the bigger the show.
+--   Shake = seconds the egg wobbles before cracking, Rays = light rays behind the slime,
+--   Sparkles = burst pieces, ScreenShake = pixels of screen shake, Rings = glow rings,
+--   Hold = seconds the result stays, Beam = light pillar in the world, Rainbow = color-cycling show
+Config.HatchFx = {
+	Common = { Shake = 0.9, Rays = 6, Sparkles = 14, ScreenShake = 0, Rings = 1, Hold = 2.2 },
+	Uncommon = { Shake = 1.1, Rays = 8, Sparkles = 20, ScreenShake = 2, Rings = 1, Hold = 2.4 },
+	Rare = { Shake = 1.4, Rays = 10, Sparkles = 28, ScreenShake = 4, Rings = 2, Hold = 2.8 },
+	Epic = { Shake = 1.8, Rays = 12, Sparkles = 38, ScreenShake = 7, Rings = 2, Hold = 3.2, Beam = true },
+	Legendary = {
+		Shake = 2.3,
+		Rays = 16,
+		Sparkles = 52,
+		ScreenShake = 11,
+		Rings = 3,
+		Hold = 3.8,
+		Beam = true,
+	},
+	Mythic = {
+		Shake = 2.8,
+		Rays = 20,
+		Sparkles = 70,
+		ScreenShake = 15,
+		Rings = 3,
+		Hold = 4.5,
+		Beam = true,
+		Rainbow = true,
+	},
+	QueueSpeedUp = 0.5, -- when several eggs hatch at once, later reveals run this much faster
+}
+
 Config.MutationOrder = { "None", "Gold", "Rainbow" }
 
 Config.Mutations = {

@@ -124,7 +124,7 @@ return function(t)
 			s.SlimeService.AddSlime(s.player, "FairySlime", "None")
 			s.world:Advance(0.3)
 			expect(s.gui:FindFirstChild("HatchPopup") ~= nil).toBe(true)
-			s.world:Advance(5)
+			s.world:Advance(9) -- Epic: shake, crack, then the result stays a few seconds
 			expect(s.gui:FindFirstChild("HatchPopup")).toBeNil()
 			-- walk next to a nest
 			local nest = s.EggService.GetNests()[1]

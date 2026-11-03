@@ -168,12 +168,12 @@ return function(t)
 			local folder = s.world.workspace.Map.Home.Treadmills
 			local bronze = folder.Treadmill_Bronze
 			expect(bronze.Console.BuyPrompt.Enabled).toBe(true)
-			expect(bronze.Console.TreadmillLabel.Label.Text:find("🔒") ~= nil).toBe(true)
+			expect(bronze.Console.TreadmillLabel.Label.Text:find("LOCKED") ~= nil).toBe(true)
 			session.Data.Coins = 1e6
 			s.Network.Invoke(player, "BuyTreadmill", "Bronze")
 			s.world:Advance(1)
 			expect(bronze.Console.BuyPrompt.Enabled).toBe(false)
-			expect(bronze.Console.TreadmillLabel.Label.Text:find("🔒")).toBeNil()
+			expect(bronze.Console.TreadmillLabel.Label.Text:find("LOCKED")).toBeNil()
 			-- belt stripes animate
 			expect(#bronze.Belt:GetChildren()).toBeGreaterThan(0) -- texture blobs
 		end)

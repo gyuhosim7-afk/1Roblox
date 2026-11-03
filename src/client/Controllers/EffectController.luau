@@ -9,6 +9,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared.Config)
 local Format = require(Shared.Format)
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Theme = require(UI.Theme)
@@ -71,6 +72,83 @@ local function bonkSwing(payload: any)
 	end
 end
 
+-- Sparkle burst around the player when a slime hatches; Epic and better also shoot a light
+-- pillar into the sky (rainbow for Mythic / Rainbow slimes).
+local function hatchBurst(payload: any)
+	local def = if type(payload) == "table" then Config.Slimes[payload.Kind] else nil
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if not def or not root then
+		return
+	end
+	local fx = (Config.HatchFx :: any)[def.Rarity] or Config.HatchFx.Common
+	local color = if payload.Mutation == "Gold"
+		then Color3.fromRGB(255, 213, 79)
+		else Theme.Hex(Config.Rarities[def.Rarity].Color)
+	local rainbow = fx.Rainbow == true or payload.Mutation == "Rainbow"
+	local anchor = Instance.new("Part")
+	anchor.Name = "HatchBurst"
+	anchor.Anchored = true
+	anchor.CanCollide = false
+	anchor.CanQuery = false
+	anchor.CanTouch = false
+	anchor.Transparency = 1
+	anchor.Size = Vector3.new(1, 1, 1)
+	anchor.Position = root.Position
+	anchor.Parent = Workspace
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Rate = 0
+	emitter.Lifetime = NumberRange.new(0.8, 1.5)
+	emitter.Speed = NumberRange.new(14, 30)
+	emitter.SpreadAngle = Vector2.new(180, 180)
+	emitter.Acceleration = Vector3.new(0, -18, 0)
+	emitter.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.9), NumberSequenceKeypoint.new(1, 0) })
+	emitter.LightEmission = 1
+	emitter.Color = if rainbow
+		then ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 90, 90)),
+			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(90, 255, 140)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 90, 255)),
+		})
+		else ColorSequence.new(color, Color3.new(1, 1, 1))
+	emitter.Parent = anchor
+	emitter:Emit(fx.Sparkles)
+	if fx.Beam then
+		local beam = Instance.new("Part")
+		beam.Name = "HatchBeam"
+		beam.Anchored = true
+		beam.CanCollide = false
+		beam.CanQuery = false
+		beam.CanTouch = false
+		beam.Shape = Enum.PartType.Cylinder
+		beam.Material = Enum.Material.Neon
+		beam.Color = color
+		beam.Transparency = 0.25
+		beam.Size = Vector3.new(160, 3, 3)
+		beam.CFrame = CFrame.new(root.Position + Vector3.new(0, 78, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+		beam.Parent = Workspace
+		TweenService:Create(beam, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = Vector3.new(160, 9, 9),
+			Transparency = 1,
+		}):Play()
+		if rainbow then
+			task.spawn(function()
+				local started = os.clock()
+				while beam.Parent and os.clock() - started < 1.8 do
+					beam.Color = Color3.fromHSV(((os.clock() - started) * 0.8) % 1, 0.7, 1)
+					task.wait(0.05)
+				end
+			end)
+		end
+		task.delay(1.9, function()
+			beam:Destroy()
+		end)
+	end
+	task.delay(2, function()
+		anchor:Destroy()
+	end)
+end
+
 local coinPopOrder = 0
 local function coinPop(amount: number)
 	local gui = player:FindFirstChild("PlayerGui")
@@ -117,6 +195,7 @@ local HANDLERS: { [string]: (any) -> () } = {
 	BonkSwing = bonkSwing,
 	Hatch = function(payload)
 		Popups.Hatch(payload)
+		hatchBurst(payload)
 	end,
 	Collect = function(payload)
 		if type(payload) == "table" and type(payload.Amount) == "number" then

@@ -314,7 +314,7 @@ function TradeWindow.Create(screen: ScreenGui, ctx: any)
 			card(theirItems, slime, order, nil)
 		end
 		local function statusText(list: { any }, accepted: boolean, confirmed: boolean): string
-			local mark = if confirmed then "  ✅ Confirmed" elseif accepted then "  ✔ Accepted" else ""
+			local mark = if confirmed then "  CONFIRMED" elseif accepted then "  ACCEPTED" else ""
 			return #list
 				.. "/"
 				.. Config.Trading.MaxItems
@@ -359,9 +359,7 @@ function TradeWindow.Create(screen: ScreenGui, ctx: any)
 					frame.BackgroundColor3 = Theme.Colors.Disabled
 				end
 				if slime.Locked then
-					local lock = Theme.Text(frame, "🔒", { MaxSize = 20 })
-					lock.Size = UDim2.fromOffset(26, 26)
-					lock.Position = UDim2.fromOffset(2, 2)
+					Theme.Icon(frame, "Lock", UDim2.fromOffset(26, 26), UDim2.fromOffset(2, 2))
 				end
 			end
 		end
@@ -396,7 +394,7 @@ function TradeWindow.Create(screen: ScreenGui, ctx: any)
 		local first = requests[1]
 		if first and not trade then
 			bannerFrom = first.UserId
-			bannerText.Text = "🤝 <b>" .. first.Name .. "</b> wants to trade!"
+			bannerText.Text = "<b>" .. first.Name .. "</b> wants to trade!"
 			banner.Visible = true
 		else
 			bannerFrom = nil

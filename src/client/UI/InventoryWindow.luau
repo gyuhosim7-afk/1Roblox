@@ -94,9 +94,16 @@ function InventoryWindow.Create(screen: ScreenGui, ctx: any)
 			badge.Size = UDim2.new(1, -8, 0, 14)
 			badge.Position = UDim2.fromOffset(4, 122)
 		end
-		Theme.Button(frame, if slime.Locked then "🔒" else "🔓", Theme.Colors.PanelLight, function()
+		local lockButton = Theme.Button(frame, "", Theme.Colors.PanelLight, function()
 			ctx.Request("LockSlime", slime.Id)
 		end, { Size = UDim2.fromOffset(42, 46), Position = UDim2.fromOffset(6, 142), MaxText = 20 })
+		Theme.Icon(
+			lockButton,
+			if slime.Locked then "Lock" else "Unlock",
+			UDim2.fromScale(0.8, 0.8),
+			UDim2.fromScale(0.5, 0.5),
+			Vector2.new(0.5, 0.5)
+		)
 		local sell = Theme.Button(
 			frame,
 			"Sell $" .. Format.Number(Formulas.SellPrice(slime.Kind, slime.Mutation)),
